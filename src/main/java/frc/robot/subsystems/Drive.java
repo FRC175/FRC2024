@@ -5,14 +5,12 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import frc.robot.Constants.DriveConstants;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.utils.DriveHelper;
 
-public final class Drive extends SubsystemBase {
+public final class Drive implements Subsystem {
 
     // These variables are final because they only need to be instantiated once (after all, you don't need to create a
     // new left master TalonSRX).
     private final CANSparkMax leftMaster, rightMaster;
-    private final DriveHelper driveHelper;
     
     /**
      * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
@@ -23,10 +21,7 @@ public final class Drive extends SubsystemBase {
     private Drive() {
         leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightMaster = new CANSparkMax(DriveConstants.RIGHT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-        driveHelper = new DriveHelper(leftMaster, rightMaster);
         configureSparks();
-
-        resetSensors();
     }
 
     /**
@@ -77,15 +72,17 @@ public final class Drive extends SubsystemBase {
      * @param throttle The throttle from the controller
      * @param turn The turn from the controller
      */
-    public void arcadeDrive(double throttle, double turn) {
-        driveHelper.arcadeDrive(throttle, turn);
+    public void arcadeDrive(double rightAxis, double leftAxis, double stickX) {
+        double throttle = rightAxis - leftAxis;
+        double turn = -1 * stickX;
+        double leftOut = throttle - turn;
+        double rightOut = throttle + turn;
+        rightMaster.set(rightOut);
+        leftMaster.set(leftOut);
     }
 
-    /**
-     * Resets the sensors of a subsystem to their initial values (e.g., set encoders to zero units).
-     */
-    @Override
-    public void resetSensors() {
-
+    public double getShortestTurnDelta(double currentAngle, double finalAngle) {
+        return Math.abs(finalAngle-currentAngle) < Math.PI ? (finalAngle-currentAngle) : (finalAngle-currentAngle) - 2 * Math.PI * (finalAngle-currentAngle)/Math.abs(finalAngle-currentAngle);
     }
+
 }

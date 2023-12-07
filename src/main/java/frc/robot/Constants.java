@@ -22,6 +22,8 @@ public final class Constants {
         public static final double test = 0;
     }
 
+    public static final int PIDGEON = 17;
+
     public static final class DriveConstants {
         public static final int RIGHT_MASTER_PORT = 2;
         public static final int LEFT_MASTER_PORT = 3;

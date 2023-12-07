@@ -11,8 +11,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.Drive.ArcadeDrive;
 import frc.robot.subsystems.Drive;
+import frc.robot.subsystems.Gyro;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -26,6 +27,9 @@ public class RobotContainer {
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
   private final Drive drive;
 
+  private final Gyro gyro;
+  
+
   private final XboxController driverController, operatorController;
 
   private final SendableChooser<Command> autoChooser;
@@ -37,6 +41,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     drive = Drive.getInstance();
+    gyro = Gyro.getInstance();
 
     driverController = new XboxController(Constants.ControllerConstants.DRIVER_CONTROLLER_PORT);
     operatorController = new XboxController(Constants.ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -63,17 +68,8 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     // Arcade Drive
-    drive.setDefaultCommand(
-      // While the drive subsystem is not called by other subsystems, call the arcade drive method using the
-      // controller's throttle and turn. When it is called, set the motors to 0% power.
-      new RunCommand(() -> {
-        double throttle = driverController.getRightTriggerAxis() - driverController.getLeftTriggerAxis();
-        double turn = -1 * driverController.getLeftX(); //-1 to turn in correct direction
-
-        drive.arcadeDrive(throttle, turn);
-
-      }, drive).andThen(() -> drive.arcadeDrive(0, 0) , drive)
-    );
+    drive.setDefaultCommand(new ArcadeDrive(driverController, drive));
+    gyro.setDefaultCommand(new RunCommand(() -> {gyro.postYaw();}, gyro));
   }
 
   /**
