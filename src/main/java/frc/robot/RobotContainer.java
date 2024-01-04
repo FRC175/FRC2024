@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.Gyro;
-import frc.robot.subsystems.Drive.Drive;
+import frc.robot.subsystems.Drive.Swerve;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -23,7 +23,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
-  private final Drive drive;
+  private final Swerve drive;
 
   private final Gyro gyro;
 
@@ -37,7 +37,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    drive = Drive.getInstance();
+    drive = Swerve.getInstance();
     gyro = Gyro.getInstance();
 
     driverController = new XboxController(Constants.ControllerConstants.DRIVER_CONTROLLER_PORT);

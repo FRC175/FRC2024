@@ -4,27 +4,29 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.Gyro;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
-public final class Drive implements Subsystem {
+public final class Swerve implements Subsystem {
 
     // These variables are final because they only need to be instantiated once (after all, you don't need to create a
     // new left master TalonSRX).
     SwerveModule frontRight, frontLeft, backRight, backLeft;
+    Gyro gyro;
     
     /**
-     * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
+     * The single instance of {@link Swerve} used to implement the "singleton" design pattern. A description of the
      * singleton design pattern can be found in the JavaDoc for {@link Drive::getInstance()}.
      */
-    private static Drive instance;
+    private static Swerve instance;
     
-    private Drive() {
+    private Swerve() {
         // leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder);
-        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder);
-        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder);
-        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder);
+        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder, -1);
+        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder, -1);
+        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, -1);
+        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, -1);
         configureSparks();
     }
 
@@ -38,11 +40,11 @@ public final class Drive implements Subsystem {
      * Usage:
      * <code>Drive drive = Drive.getInstance();</code>
      *
-     * @return The single instance of {@link Drive}
+     * @return The single instance of {@link Swerve}
      */
-    public static Drive getInstance() {
+    public static Swerve getInstance() {
         if (instance == null) {
-            instance = new Drive();
+            instance = new Swerve();
         }
 
         return instance;
@@ -73,5 +75,25 @@ public final class Drive implements Subsystem {
         backRight.turn(turn);
         backLeft.turn(turn);
     }
+
+    public void swerve(double stickX, double stickY, double twist) {
+       
+        
+       
+    }
+
+    // private void swerveInVector(double magnitude, double direction, double twist) {
+
+    //     frontRight.
+    //     frontLeft.drive(drive);
+    //     backRight.drive(drive);
+    //     backLeft.drive(drive);
+
+    //     frontRight.turn(turn);
+    //     frontLeft.turn(turn);
+    //     backRight.turn(turn);
+    //     backLeft.turn(turn);
+
+    // }
 
 }

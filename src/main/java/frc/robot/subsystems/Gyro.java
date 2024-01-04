@@ -5,7 +5,7 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.Drive.Drive;
+import frc.robot.subsystems.Drive.Swerve;
 
 public final class Gyro implements Subsystem {
 
@@ -14,7 +14,7 @@ public final class Gyro implements Subsystem {
     private final Pigeon2 pigeon;
     
     /**
-     * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
+     * The single instance of {@link Swerve} used to implement the "singleton" design pattern. A description of the
      * singleton design pattern can be found in the JavaDoc for {@link Drive::getInstance()}.
      */
     private static Gyro instance;
@@ -34,7 +34,7 @@ public final class Gyro implements Subsystem {
      * Usage:
      * <code>Drive drive = Drive.getInstance();</code>
      *
-     * @return The single instance of {@link Drive}
+     * @return The single instance of {@link Swerve}
      */
     public static Gyro getInstance() {
         if (instance == null) {
