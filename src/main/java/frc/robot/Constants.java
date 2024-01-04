@@ -22,10 +22,23 @@ public final class Constants {
         public static final double test = 0;
     }
 
-    public static final int PIDGEON = 17;
+    
 
     public static final class DriveConstants {
-        public static final int RIGHT_MASTER_PORT = 2;
-        public static final int LEFT_MASTER_PORT = 3;
+        public static final int frontRightDrive = 2;
+        public static final int frontRightRot = 3;
+        public static final int frontLeftDrive = 4;
+        public static final int frontLeftRot = 5;
+        public static final int backRightDrive = 6;
+        public static final int backRightRot = 7;
+        public static final int backLeftDrive = 8;
+        public static final int backLeftRot = 9;
+
+        public static final int frontRightEncoder = 21;
+        public static final int frontLeftEncoder = 22;
+        public static final int backRightEncoder = 23;
+        public static final int backLeftEncoder = 24;
+
+        public static final int PIDGEON = 20;
     }
 }

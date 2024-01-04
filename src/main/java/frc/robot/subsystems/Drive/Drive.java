@@ -1,16 +1,17 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.Drive;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import frc.robot.Constants.DriveConstants;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public final class Drive implements Subsystem {
 
     // These variables are final because they only need to be instantiated once (after all, you don't need to create a
     // new left master TalonSRX).
-    private final CANSparkMax leftMaster, rightMaster;
+    SwerveModule frontRight, frontLeft, backRight, backLeft;
     
     /**
      * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
@@ -19,8 +20,11 @@ public final class Drive implements Subsystem {
     private static Drive instance;
     
     private Drive() {
-        leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-        rightMaster = new CANSparkMax(DriveConstants.RIGHT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+        // leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
+        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder);
+        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder);
+        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder);
+        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder);
         configureSparks();
     }
 
@@ -48,11 +52,8 @@ public final class Drive implements Subsystem {
      * Helper method that configures the Spark Max motor controllers.
      */
     private void configureSparks() {
-        leftMaster.restoreFactoryDefaults();
-        leftMaster.setInverted(false);
 
-        rightMaster.restoreFactoryDefaults();
-        rightMaster.setInverted(true);
+        
     }
 
     /**
@@ -61,28 +62,16 @@ public final class Drive implements Subsystem {
      * @param leftDemand The percent output for the left drive motors
      * @param rightDemand The percent output for the right drive motors
      */
-    public void setOpenLoop(double leftDemand, double rightDemand) {
-        leftMaster.set(leftDemand);
-        rightMaster.set(rightDemand);
-    }
+    public void setOpenLoop(double drive, double turn) {
+        frontRight.drive(drive);
+        frontLeft.drive(drive);
+        backRight.drive(drive);
+        backLeft.drive(drive);
 
-    /**
-     * Controls the drive motor using arcade controls - with a throttle and a turn.
-     * 
-     * @param throttle The throttle from the controller
-     * @param turn The turn from the controller
-     */
-    public void arcadeDrive(double rightAxis, double leftAxis, double stickX) {
-        double throttle = rightAxis - leftAxis;
-        double turn = -1 * stickX;
-        double leftOut = throttle - turn;
-        double rightOut = throttle + turn;
-        rightMaster.set(rightOut);
-        leftMaster.set(leftOut);
-    }
-
-    public double getShortestTurnDelta(double currentAngle, double finalAngle) {
-        return Math.abs(finalAngle-currentAngle) < Math.PI ? (finalAngle-currentAngle) : (finalAngle-currentAngle) - 2 * Math.PI * (finalAngle-currentAngle)/Math.abs(finalAngle-currentAngle);
+        frontRight.turn(turn);
+        frontLeft.turn(turn);
+        backRight.turn(turn);
+        backLeft.turn(turn);
     }
 
 }

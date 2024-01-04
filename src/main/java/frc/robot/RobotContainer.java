@@ -7,13 +7,11 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-// import frc.robot.commands.ExampleCommand;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.commands.Drive.ArcadeDrive;
-import frc.robot.subsystems.Drive;
 import frc.robot.subsystems.Gyro;
+import frc.robot.subsystems.Drive.Drive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,7 +26,6 @@ public class RobotContainer {
   private final Drive drive;
 
   private final Gyro gyro;
-  
 
   private final XboxController driverController, operatorController;
 
@@ -68,8 +65,9 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     // Arcade Drive
-    drive.setDefaultCommand(new ArcadeDrive(driverController, drive));
-    gyro.setDefaultCommand(new RunCommand(() -> {gyro.postYaw();}, gyro));
+    drive.setDefaultCommand(new RunCommand(() -> {
+      drive.setOpenLoop(driverController.getRightTriggerAxis(), 0);
+    }, drive));
   }
 
   /**
@@ -78,7 +76,10 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+    // new Trigger(() -> )
+
+  }
 
   private void configureAutoChooser() {
     autoChooser.setDefaultOption("Nothing", new WaitCommand(0));;

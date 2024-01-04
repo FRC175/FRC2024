@@ -1,10 +1,11 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.Drive.Drive;
 
 public final class Gyro implements Subsystem {
 
@@ -19,7 +20,7 @@ public final class Gyro implements Subsystem {
     private static Gyro instance;
     
     private Gyro() {
-        pigeon = new Pigeon2(Constants.PIDGEON, "angie");
+        pigeon = new Pigeon2(DriveConstants.PIDGEON);
         
     }
 
@@ -44,7 +45,7 @@ public final class Gyro implements Subsystem {
     }
 
     public double getYaw() {
-        return pigeon.getYaw();
+        return pigeon.getYaw().getValue();
     }
 
     public void postYaw() {
