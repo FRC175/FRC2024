@@ -25,8 +25,8 @@ public final class Constants {
     
 
     public static final class DriveConstants {
-        public static final int frontRightDrive = 2;
-        public static final int frontRightRot = 3;
+        public static final int frontRightDrive = 3;
+        public static final int frontRightRot = 2;
         public static final int frontLeftDrive = 4;
         public static final int frontLeftRot = 5;
         public static final int backRightDrive = 6;

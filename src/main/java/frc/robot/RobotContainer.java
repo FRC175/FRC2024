@@ -66,7 +66,7 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // Arcade Drive
     drive.setDefaultCommand(new RunCommand(() -> {
-      drive.setOpenLoop(driverController.getRightTriggerAxis(), 0);
+      drive.setOpenLoop(driverController.getRightTriggerAxis(), driverController.getLeftTriggerAxis());
     }, drive));
   }
 
