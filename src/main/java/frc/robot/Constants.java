@@ -34,6 +34,11 @@ public final class Constants {
         public static final int backLeftDrive = 8;
         public static final int backLeftRot = 9;
 
+        public static final double frontRightTurnAngle = 45;
+        public static final double frontLeftTurnAngle = 135;
+        public static final double backRightTurnAngle = 315;
+        public static final double backLeftTurnAngle = 225;
+
         public static final int frontRightEncoder = 21;
         public static final int frontLeftEncoder = 22;
         public static final int backRightEncoder = 23;

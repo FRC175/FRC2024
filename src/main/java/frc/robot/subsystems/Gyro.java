@@ -48,6 +48,10 @@ public final class Gyro implements Subsystem {
         return pigeon.getYaw().getValue();
     }
 
+    public double getAngleDegrees() {
+        return -1;
+    }
+
     public void postYaw() {
         SmartDashboard.putNumber("Yee-Yaw", getYaw());
     }

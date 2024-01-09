@@ -1,10 +1,8 @@
 package frc.robot.subsystems.Drive;
 
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.utils.Vector;
+
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public final class Drive implements Subsystem {
@@ -21,10 +19,10 @@ public final class Drive implements Subsystem {
     
     private Drive() {
         // leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder);
-        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder);
-        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder);
-        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder);
+        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder, DriveConstants.frontRightTurnAngle);
+        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder, DriveConstants.frontLeftTurnAngle);
+        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle);
+        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle);
         configureSparks();
     }
 
@@ -63,15 +61,35 @@ public final class Drive implements Subsystem {
      * @param rightDemand The percent output for the right drive motors
      */
     public void setOpenLoop(double drive, double turn) {
-        frontRight.drive(drive);
-        frontLeft.drive(drive);
-        backRight.drive(drive);
-        backLeft.drive(drive);
+        frontRight.driveOpenLoop(drive);
+        frontLeft.driveOpenLoop(drive);
+        backRight.driveOpenLoop(drive);
+        backLeft.driveOpenLoop(drive);
 
-        frontRight.turn(turn);
-        frontLeft.turn(turn);
-        backRight.turn(turn);
-        backLeft.turn(turn);
+        frontRight.turnOpenLoop(turn);
+        frontLeft.turnOpenLoop(turn);
+        backRight.turnOpenLoop(turn);
+        backLeft.turnOpenLoop(turn);
     }
+
+    public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
+        Vector t = swerveInVector(joyX, joyY, twist);
+        t.rotate(-90);
+        frontRight.swerve(t, twist, gyroAngle);
+        frontLeft.swerve(t, twist, gyroAngle);
+        backRight.swerve(t,twist, gyroAngle);
+        backLeft.swerve(t, twist, gyroAngle);
+    }
+
+    public void turning(double fr, double fl, double br, double bl) {
+        frontRight.turnOpenLoop(fr);
+        frontLeft.turnOpenLoop(fl);
+        backRight.turnOpenLoop(br);
+        backLeft.turnOpenLoop(bl);
+    }
+
+    private Vector swerveInVector(double x, double y, double t) {
+        return new Vector(x, y);
+    }   
 
 }
