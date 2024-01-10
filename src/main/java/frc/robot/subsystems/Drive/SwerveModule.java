@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
 import edu.wpi.first.math.controller.PIDController;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.Vector;
 
 public class SwerveModule {
@@ -44,29 +45,29 @@ public class SwerveModule {
     }
 
     public void swerve(Vector t, double twist, double gyroAngle) {
-        // Vector r = new Vector(twist * Math.cos(Math.toRadians(turnAngle)), twist * Math.sin(Math.toRadians(turnAngle))); // both vectors have angles with respect to x
-        // Vector goal = t.add(r);
-        Vector goal = t;
+        Vector r = new Vector(twist * Math.cos(Math.toRadians(turnAngle)), twist * Math.sin(Math.toRadians(turnAngle))); // both vectors have angles with respect to x
+        Vector goal = t.add(r);
+        // Vector goal = t;
         vectorMagnitudes[num] = goal.getMagnitude();
         goal.normalize(maxMag());
         drive.set(goal.getMagnitude());
 
-        double turnOut = interpolate(goalAngle, gyroAngle);
+        double turnOut = interpolate(goalAngle);
         turn.set(turnOut);
     }
 
-    public double interpolate(double goalAngle, double gyroAngle) {
-        double val = controller.calculate(encoderToAngle(encoder.getAbsolutePosition().getValue()), goalAngle-gyroAngle);
-        // NEEDS:
-        /*
-         * Method to go from encoder out 
-         */
-        double output = 0;
+    public double interpolate(double goalAngle) {
+        // double val = controller.calculate(encoderToAngle(encoder.getAbsolutePosition().getValue()), goalAngle-gyroAngle);
+        double currentAngle = encoderToAngle(getEncoder());
+        double delta = Math.abs(goalAngle-currentAngle) < 180 ? (goalAngle-currentAngle) : (goalAngle-currentAngle) - 360 * Math.signum(goalAngle-currentAngle);
+        double maxSpeed = 0.3;
+        double output = Math.abs(delta) > 0.5 ? delta/90 * maxSpeed : 0;
+        
         return output;
     }
 
     public double encoderToAngle(double encoderVal) {
-        return -1;
+        return (encoderVal % 4096) * DriveConstants.ENCODERTOANGLE;
     }
 
     public double getEncoder() {

@@ -74,7 +74,7 @@ public final class Drive implements Subsystem {
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
         Vector t = swerveInVector(joyX, joyY, twist);
-        t.rotate(-90);
+        t.rotate(-90 - gyroAngle);
         frontRight.swerve(t, twist, gyroAngle);
         frontLeft.swerve(t, twist, gyroAngle);
         backRight.swerve(t,twist, gyroAngle);

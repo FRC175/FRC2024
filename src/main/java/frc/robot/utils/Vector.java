@@ -9,16 +9,16 @@ public class Vector {
     public Vector(double x, double y) {
         this.x = x;
         this.y = y;
-        this.m = Math.sqrt(x*x+y*y);
-        this.theta = Math.atan2(y, x);
+        this.m = Math.sqrt(x * x + y * y);
+        this.theta = Math.toDegrees(Math.atan2(y, x));
     }
 
     public void rotate(double angle) {
-        theta = (theta + angle) % 360;
+        theta = ((theta + angle) + 360) % 360;
     }
 
     public void normalize(double val) {
-        m = m/val;
+        m = m / val;
         x = m * Math.cos(getAngleRadians());
         y = m * Math.sin(getAngleRadians());
     }
