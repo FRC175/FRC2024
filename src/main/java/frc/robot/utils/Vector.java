@@ -27,6 +27,12 @@ public class Vector {
         return new Vector(x+v.x, y+v.y);
     }
 
+    public void setAngle(double angle) {
+        theta = angle;
+        x = m * Math.cos(getAngleRadians());
+        y = m * Math.sin(getAngleRadians());
+    }
+
     public double getAngle() {
         return theta;
     }

@@ -10,6 +10,7 @@ public final class Drive implements Subsystem {
     // These variables are final because they only need to be instantiated once (after all, you don't need to create a
     // new left master TalonSRX).
     SwerveModule frontRight, frontLeft, backRight, backLeft;
+    double lastValidAngle;
     
     /**
      * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
@@ -24,6 +25,8 @@ public final class Drive implements Subsystem {
         backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle, DriveConstants.backRightBaseAngle);
         backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle, DriveConstants.backLeftBaseAngle);
         configureSparks();
+
+        lastValidAngle = 0;
     }
 
     /**
@@ -85,8 +88,19 @@ public final class Drive implements Subsystem {
     }
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
-        Vector t = swerveInVector(joyX, joyY, twist);
+        Vector t = swerveInVector(joyX, joyY * -1, twist);
+        SmartDashboard.putNumber("Joystick Angle", t.getAngle());
+        
+        
+
+        if (t.getMagnitude() < 0.001) {
+            t.setAngle(lastValidAngle);
+        } else {
+            lastValidAngle = t.getAngle();
+        }
+
         t.rotate(-90 - gyroAngle);
+
         frontRight.swerve(t, twist, gyroAngle);
         frontLeft.swerve(t, twist, gyroAngle);
         backRight.swerve(t,twist, gyroAngle);

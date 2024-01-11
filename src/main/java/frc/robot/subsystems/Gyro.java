@@ -45,8 +45,11 @@ public final class Gyro implements Subsystem {
     }
 
     public double getYaw() {
-        return 0;
-        // return ((pigeon.getYaw().getValue() % 360) + 360) % 360;
+        return ((pigeon.getYaw().getValue() % 360) + 360) % 360;
+    }
+
+    public void resetGyro() {
+        pigeon.setYaw(0);
     }
 
     public double getAngleDegrees() {

@@ -4,6 +4,7 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.Vector;
 
@@ -49,19 +50,24 @@ public class SwerveModule {
         Vector goal = t;
         vectorMagnitudes[num] = goal.getMagnitude();
         // goal.normalize(maxMag());
+        goalAngle = goal.getAngle();
+        // if (Math.abs(goal.getMagnitude()) > 0.01) goalAngle = goal.getAngle();
         drive.set(goal.getMagnitude());
 
         double turnOut = interpolate(goalAngle);
+        SmartDashboard.putNumber("Goal Angle", goalAngle);
+        
         turn.set(turnOut);
     }
 
     public double interpolate(double goalAngle) {
         // double val = controller.calculate(encoderToAngle(encoder.getAbsolutePosition().getValue()), goalAngle-gyroAngle);
-        double currentAngle = encoderToAngle(getEncoder());
+        double currentAngle = getAngle();
         double delta = Math.abs(goalAngle-currentAngle) < 180 ? (goalAngle-currentAngle) : (goalAngle-currentAngle) - 360 * Math.signum(goalAngle-currentAngle);
-        double maxSpeed = 0.1;
-        double output = Math.abs(delta) > 0.5 ? (delta / 90) * maxSpeed : 0;
+        double maxSpeed = 1.0;
+        double output = Math.abs(delta) > 1 ? ((delta / 180) * maxSpeed) : 0;
         output *= -1.0;
+        //+ (Math.signum(delta) * 0.075)
 
         return output;
     }
