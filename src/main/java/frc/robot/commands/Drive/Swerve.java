@@ -5,13 +5,13 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive.Drive;
+import frc.robot.utils.Utils;
 
 public class Swerve extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
     private final Drive drive;
     private final Gyro gyro;
     private final Joystick joy;
-    private PIDController controller;
 
     public Swerve(Joystick joy, Drive drive, Gyro gyro) {
         this.joy = joy;
@@ -29,8 +29,9 @@ public class Swerve extends CommandBase {
 
     @Override
     public void execute() {
-        drive.swerve(joy.getX(), joy.getY(), joy.getTwist(), gyro.getYaw());
-        
+        drive.swerve(Utils.deadband(joy.getX(), 0.05), Utils.deadband(joy.getY(), 0.05), joy.getTwist(), gyro.getYaw());
+        drive.postEncoders();
+        gyro.postYaw();
     }
 
     @Override

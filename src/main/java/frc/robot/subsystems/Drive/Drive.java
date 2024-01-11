@@ -2,7 +2,7 @@ package frc.robot.subsystems.Drive;
 
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.Vector;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
 public final class Drive implements Subsystem {
@@ -19,10 +19,10 @@ public final class Drive implements Subsystem {
     
     private Drive() {
         // leftMaster = new CANSparkMax(DriveConstants.LEFT_MASTER_PORT, CANSparkMaxLowLevel.MotorType.kBrushless);
-        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder, DriveConstants.frontRightTurnAngle);
-        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder, DriveConstants.frontLeftTurnAngle);
-        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle);
-        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle);
+        frontRight = new SwerveModule(DriveConstants.frontRightDrive, DriveConstants.frontRightRot, DriveConstants.frontRightEncoder, DriveConstants.frontRightTurnAngle, DriveConstants.frontRightBaseAngle);
+        frontLeft = new SwerveModule(DriveConstants.frontLeftDrive, DriveConstants.frontLeftRot, DriveConstants.frontLeftEncoder, DriveConstants.frontLeftTurnAngle, DriveConstants.frontLeftBaseAngle);
+        backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle, DriveConstants.backRightBaseAngle);
+        backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle, DriveConstants.backLeftBaseAngle);
         configureSparks();
     }
 
@@ -70,6 +70,18 @@ public final class Drive implements Subsystem {
         frontLeft.turnOpenLoop(turn);
         backRight.turnOpenLoop(turn);
         backLeft.turnOpenLoop(turn);
+    }
+
+    public void postEncoders() {
+        SmartDashboard.putNumber("FrontRightD", frontRight.getAngle());
+        SmartDashboard.putNumber("FrontLeftD", frontLeft.getAngle());
+        SmartDashboard.putNumber("BackRightD", backRight.getAngle());
+        SmartDashboard.putNumber("BackLeftD", backLeft.getAngle());
+
+        SmartDashboard.putNumber("FrontRightP", frontRight.getEncoder());
+        SmartDashboard.putNumber("FrontLeftP", frontLeft.getEncoder());
+        SmartDashboard.putNumber("BackRightP", backRight.getEncoder());
+        SmartDashboard.putNumber("BackLeftP", backLeft.getEncoder());
     }
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
