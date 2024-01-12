@@ -88,23 +88,26 @@ public final class Drive implements Subsystem {
     }
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
-        Vector t = swerveInVector(joyX, joyY * -1, twist);
-        SmartDashboard.putNumber("Joystick Angle", t.getAngle());
-        
-        
+        Vector transversal = new Vector(joyX, joyY * -1);
+        SmartDashboard.putNumber("Joystick Angle", transversal.getAngle());
 
-        if (t.getMagnitude() < 0.001) {
-            t.setAngle(lastValidAngle);
+        if (transversal.getMagnitude() < 0.001) {
+            transversal.setAngle(lastValidAngle);
         } else {
-            lastValidAngle = t.getAngle();
+            lastValidAngle = transversal.getAngle();
         }
 
-        t.rotate(-90 - gyroAngle);
+        transversal.rotate(- 90 - gyroAngle);
 
-        frontRight.swerve(t, twist, gyroAngle);
-        frontLeft.swerve(t, twist, gyroAngle);
-        backRight.swerve(t,twist, gyroAngle);
-        backLeft.swerve(t, twist, gyroAngle);
+        frontRight.calculateRawOutputs(transversal, twist, gyroAngle);
+        frontLeft.calculateRawOutputs(transversal, twist, gyroAngle);
+        backRight.calculateRawOutputs(transversal,twist, gyroAngle);
+        backLeft.calculateRawOutputs(transversal, twist, gyroAngle);
+
+        frontRight.setOutputs();
+        frontLeft.setOutputs();
+        backRight.setOutputs();
+        backLeft.setOutputs();
     }
 
     public void turning(double fr, double fl, double br, double bl) {
@@ -113,9 +116,4 @@ public final class Drive implements Subsystem {
         backRight.turnOpenLoop(br);
         backLeft.turnOpenLoop(bl);
     }
-
-    private Vector swerveInVector(double x, double y, double t) {
-        return new Vector(x, y);
-    }   
-
 }

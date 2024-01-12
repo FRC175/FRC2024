@@ -1,7 +1,6 @@
 package frc.robot.commands.Drive;
 
 import frc.robot.subsystems.Gyro;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive.Drive;
@@ -12,11 +11,13 @@ public class Swerve extends CommandBase {
     private final Drive drive;
     private final Gyro gyro;
     private final Joystick joy;
+    private final double travSpeed;
 
     public Swerve(Joystick joy, Drive drive, Gyro gyro) {
         this.joy = joy;
         this.drive = drive;
         this.gyro = gyro;
+        this.travSpeed = 0.7;
 
         addRequirements(drive, gyro);
     }
@@ -29,7 +30,11 @@ public class Swerve extends CommandBase {
 
     @Override
     public void execute() {
-        drive.swerve(Utils.deadband(joy.getX(), 0.05), Utils.deadband(joy.getY(), 0.05), joy.getTwist(), gyro.getYaw());
+        drive.swerve(
+            Utils.deadband(joy.getX(), 0.05, travSpeed), 
+            Utils.deadband(joy.getY(), 0.05, travSpeed), 
+            Utils.deadband(joy.getTwist(), 0.25) * -1 * (1-travSpeed), 
+            gyro.getYaw());
         drive.postEncoders();
         gyro.postYaw();
     }
