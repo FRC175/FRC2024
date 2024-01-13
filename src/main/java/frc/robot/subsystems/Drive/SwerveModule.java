@@ -7,6 +7,9 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.Vector;
 
+/**
+ * A class which represents a drive-turn motor combination, used for "Swerve Drive".
+ */
 public class SwerveModule {
 
     private final CANcoder encoder;
@@ -21,6 +24,15 @@ public class SwerveModule {
     private static double[] vectorMagnitudes = new double[4]; //FR,FL,BR,BL
     private static double[] vectorRotations = new double[4];
     
+    /**
+     * A Swerve Module is an abstraction of each individual turn-drive motor combination. They must work
+     * in conjunction in order to accurately produce swerve motion.
+     * @param drive CAN ID of the Drive motor.
+     * @param turn CAN ID of the Turn motor.
+     * @param encoder CAN ID of the specified CANCoder.
+     * @param baseAngle The angle of maximum turning for the specified position.
+     * @param basePosition A value to shift the CANCoders frame of reference, sets that position to be "0 degrees".
+     */
     public SwerveModule(int drive, int turn, int encoder, double baseAngle, double basePosition) {
         this.drive = new CANSparkMax(drive, CANSparkMaxLowLevel.MotorType.kBrushless);
         this.turn = new CANSparkMax(turn, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -32,18 +44,39 @@ public class SwerveModule {
         this.reversed = false;
     }
 
+    /**
+     * Finds the goal vector with the largest magnitude.
+     * @return the magnitude of the vector
+     * 
+     */
     private static double maxMag() {
         return Math.max(Math.max(vectorMagnitudes[0], vectorMagnitudes[1]), Math.max(vectorMagnitudes[2], vectorMagnitudes[3]));
     }
 
+
+    /**
+     * Runs the drive motors as a specified power.
+     * @param power : [0,1]
+     */
     public void driveOpenLoop(double power) {
         drive.set(power);
     }
 
+    /**
+     * Runs the turn motors at a specified power.
+     * @param power : [0,1]
+     */
     public void turnOpenLoop(double power) {
         turn.set(power);
     }
 
+    /**
+     * Finds the outputs for the turn and drive motors. <p>Passes the data into the {@link #vectorMagnitudes}, and {@link #vectorRotations} static arrays. <p>Used in {@link #setOutputs()}.
+     * @param transversal The input transversal vector from the joystick. <strong>[0,1]</strong>, <strong>[0,360)</strong> 
+     * @param twist The input twist value from the joystick. <strong>[0,1]</strong>
+     * @param gyroAngle The current gyro heading. <strong>[0, 360)</strong>
+     * 
+     */
     public void calculateRawOutputs(Vector transversal, double twist, double gyroAngle) {
         Vector rotation = new Vector(twist * Math.cos(Math.toRadians(turnAngle)), twist * Math.sin(Math.toRadians(turnAngle))); // both vectors have angles with respect to x
         // rotation.rotate(-90);
@@ -77,6 +110,13 @@ public class SwerveModule {
         SmartDashboard.putNumber("Goal Angle", goalAngle);
     }
 
+    public void calculateRawLockOutputs(Vector transversal, double gyroAngle) {
+
+    }
+
+    /**
+     * Sets the outputs for the drive and turn motors. <p>{@link #calculateRawOutputs()} {@link #calculateRawLockOutputs()}
+     */
     public void setOutputs() {
         // double maxOutput = maxMag();
         // if (maxOutput > 1.0) {
