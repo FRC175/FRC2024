@@ -15,6 +15,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.Drive.LockMode;
+import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
 import frc.robot.subsystems.Gyro;
 import frc.robot.subsystems.Drive.Drive;
@@ -35,6 +37,8 @@ public class RobotContainer {
   private final Joystick driverController, operatorController;
 
   private final SendableChooser<Command> autoChooser;
+
+  double lockAngle = 0;
 
   private static RobotContainer instance;
 
@@ -70,7 +74,7 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     // Arcade Drive
-    drive.setDefaultCommand(new Swerve(driverController, drive, gyro));
+    drive.setDefaultCommand(new LockSwerve(driverController, drive, gyro));
   }
 
   /**
@@ -83,6 +87,13 @@ public class RobotContainer {
     new Trigger(() -> new JoystickButton(driverController, 12).getAsBoolean())
       .onTrue(new InstantCommand(() -> gyro.resetGyro(), gyro));
 
+    new Trigger(() -> driverController.getTrigger())
+      .whileTrue(new Swerve(driverController, drive, gyro))
+      .whileFalse(new LockSwerve(driverController, drive, gyro));
+
+    new Trigger(() -> driverController.getRawButton(11))
+      .whileTrue(new LockMode(drive))
+      .onFalse(new LockSwerve(driverController, drive, gyro));
   }
 
   private void configureAutoChooser() {

@@ -77,16 +77,25 @@ public class SwerveModule {
      * @param gyroAngle The current gyro heading. <strong>[0, 360)</strong>
      * 
      */
-    public void calculateRawOutputs(Vector transversal, double twist, double gyroAngle) {
+    public Vector findControlledRotationVector(double twist) {
         Vector rotation = new Vector(twist * Math.cos(Math.toRadians(turnAngle)), twist * Math.sin(Math.toRadians(turnAngle))); // both vectors have angles with respect to x
-        // rotation.rotate(-90);
-        Vector goal = transversal.add(rotation);
+        return rotation;
+    }
 
-        // Vector goal = transversal;
+
+    public Vector findLockedRotationVector(double lockAngle, double gyroAngle) {
+        double delta = Math.abs(lockAngle-gyroAngle) < 180 ? (lockAngle-gyroAngle) : (lockAngle-gyroAngle) - 360 * Math.signum(lockAngle-gyroAngle);
+        double twist = (delta / 180.0) * 1.0;
+        Vector rotation = new Vector(twist * Math.cos(Math.toRadians(turnAngle)), twist * Math.sin(Math.toRadians(turnAngle))); // both vectors have angles with respect to x
+        return rotation;
+    }
+    
+    public void calculateRawOutputs(Vector transversal, Vector rotation) {
+        // both vectors have angles with respect to x
+        Vector goal = transversal.add(rotation);
 
         vectorMagnitudes[num] = goal.getMagnitude();
 
-        // if (reversed) goalAngle = (goal.getAngle()+180) % 360;
         goalAngle = goal.getAngle();
 
         if (Math.abs(goal.getMagnitude()) > 0.01) goalAngle = goal.getAngle();
@@ -110,10 +119,6 @@ public class SwerveModule {
         SmartDashboard.putNumber("Goal Angle", goalAngle);
     }
 
-    public void calculateRawLockOutputs(Vector transversal, double gyroAngle) {
-
-    }
-
     /**
      * Sets the outputs for the drive and turn motors. <p>{@link #calculateRawOutputs()} {@link #calculateRawLockOutputs()}
      */
@@ -127,6 +132,18 @@ public class SwerveModule {
         if (reversed) drive.set(-1 * vectorMagnitudes[num]);
         else drive.set(vectorMagnitudes[num]);
         turn.set(vectorRotations[num]);
+    }
+
+    public void lock() {
+        double goalAngle = (turnAngle + 90) % 360;
+        double delta = findDelta(goalAngle);
+
+        double turnOut = Math.abs(delta) > 1 ? ((delta / 180) * 1.0) : 0;
+        turnOut *= -1.0;
+        vectorRotations[num] = turnOut;
+        for (int i = 0; i < vectorMagnitudes.length; i++) {
+            vectorMagnitudes[i] = 0;
+        }
     }
 
     public double findDelta(double goalAngle) {

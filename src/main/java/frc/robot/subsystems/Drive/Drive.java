@@ -99,10 +99,45 @@ public final class Drive implements Subsystem {
 
         transversal.rotate(- 90 - gyroAngle);
 
-        frontRight.calculateRawOutputs(transversal, twist, gyroAngle);
-        frontLeft.calculateRawOutputs(transversal, twist, gyroAngle);
-        backRight.calculateRawOutputs(transversal,twist, gyroAngle);
-        backLeft.calculateRawOutputs(transversal, twist, gyroAngle);
+        frontRight.calculateRawOutputs(transversal, frontRight.findControlledRotationVector(twist));
+        frontLeft.calculateRawOutputs(transversal, frontLeft.findControlledRotationVector(twist));
+        backRight.calculateRawOutputs(transversal, backRight.findControlledRotationVector(twist));
+        backLeft.calculateRawOutputs(transversal, backLeft.findControlledRotationVector(twist));
+
+        frontRight.setOutputs();
+        frontLeft.setOutputs();
+        backRight.setOutputs();
+        backLeft.setOutputs();
+    }
+
+    public void lockSwerve(double joyX, double joyY, double lockAngle, double gyroAngle) {
+        Vector transversal = new Vector(joyX, joyY * -1);
+        SmartDashboard.putNumber("Joystick Angle", transversal.getAngle());
+
+        if (transversal.getMagnitude() < 0.001) {
+            transversal.setAngle(lastValidAngle);
+        } else {
+            lastValidAngle = transversal.getAngle();
+        }
+
+        transversal.rotate(- 90 - gyroAngle);
+
+        frontRight.calculateRawOutputs(transversal, frontRight.findLockedRotationVector(lockAngle, gyroAngle));
+        frontLeft.calculateRawOutputs(transversal, frontLeft.findLockedRotationVector(lockAngle, gyroAngle));
+        backRight.calculateRawOutputs(transversal, backRight.findLockedRotationVector(lockAngle, gyroAngle));
+        backLeft.calculateRawOutputs(transversal, backLeft.findLockedRotationVector(lockAngle, gyroAngle));
+
+        frontRight.setOutputs();
+        frontLeft.setOutputs();
+        backRight.setOutputs();
+        backLeft.setOutputs();
+    }
+
+    public void lock() {
+        frontRight.lock();
+        frontLeft.lock();
+        backRight.lock();
+        backLeft.lock();
 
         frontRight.setOutputs();
         frontLeft.setOutputs();
