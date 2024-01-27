@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.DriveConstants;
@@ -35,7 +36,17 @@ public final class Shuffleboard implements Subsystem {
 
     public void logTargeted() {
         SmartDashboard.putBoolean("apriltag", limelight.targetDetected());
-        SmartDashboard.putNumber("ID", limelight.getTargetID());
+        SmartDashboard.putNumber("Prim ID", limelight.getTargetID());
+        // PLACEHOLDER CODE - smartdashboard is being weird about adding arrays
+        SmartDashboard.putStringArray("json", limelight.test());
+       
+        // limelight.table.getKeys().forEach(key -> {
+        //     NetworkTableEntry entry = limelight.table.getEntry(key);
+        //     Object value = entry.getValue().getValue();
+        //     SmartDashboard.putString("DIE DIED DIE" + key , ( key + ": " + value));
+        
+        // });
+      
     }
     
   

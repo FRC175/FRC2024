@@ -5,8 +5,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableType;
 
 
 
@@ -17,7 +21,7 @@ public final class Limelight implements Subsystem {
      */
     private static Limelight instance;
 
-    private final NetworkTable table;
+    public final NetworkTable table;
 
     public int pipe;
     
@@ -52,6 +56,21 @@ public final class Limelight implements Subsystem {
     public double getTargetID() {
         return table.getEntry("tid").getDouble(0);
     }
+    
+ 
+    public String[] test() {
+    //     double[] detectedTargets = table.getEntry("t").getDoubleArray(new double [1]);
+    //     double[] explode = {1.0,2.0,3.0};
+    // //    double[] detectedTargets = {69.420, 2.0, 38.3};
+    //     if (detectedTargets[0] == 0) return explode;
+    //     else return detectedTargets;
+
+    String data = table.getEntry("json").getString("0");
+    return new String[0];
+    
+        
+    }
+
     
 
     /**

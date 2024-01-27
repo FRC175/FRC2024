@@ -85,6 +85,7 @@ public class RobotContainer {
     
   shuffleboard.setDefaultCommand(new RunCommand(() -> {
     shuffleboard.logTargeted();
+    
   }, shuffleboard));
 
 
