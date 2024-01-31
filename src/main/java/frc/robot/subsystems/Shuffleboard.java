@@ -36,17 +36,21 @@ public final class Shuffleboard implements Subsystem {
 
     public void logTargeted() {
         SmartDashboard.putBoolean("apriltag", limelight.targetDetected());
-        SmartDashboard.putNumber("Prim ID", limelight.getTargetID());
+        SmartDashboard.putNumber("numberApriltags", limelight.numTargetsDetected(limelight.getJson()));
+        for (int i = 0; i < limelight.getTargetIds(limelight.getJson()).length; i++) {
+            SmartDashboard.putNumber("apriltag" + (i + 1), limelight.getTargetIds(limelight.getJson())[i]);
+        }
+        for (int i = 0; i < limelight.getVerticalAngle(limelight.getJson()).length; i++) {
+            SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")verticalOff", limelight.getVerticalAngle(limelight.getJson())[i]);
+        }
+        for (int i = 0; i < limelight.getHorizontalAngle(limelight.getJson()).length; i++) {
+            SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")horizontalOff", limelight.getHorizontalAngle(limelight.getJson())[i]);
+        }
+        //SmartDashboard.putNumber("Prim ID", limelight.getTargetID());
         // PLACEHOLDER CODE - smartdashboard is being weird about adding arrays
-        SmartDashboard.putStringArray("json", limelight.test());
+        SmartDashboard.putNumberArray("json", limelight.getTargetIds(limelight.getJson()));
        
-        // limelight.table.getKeys().forEach(key -> {
-        //     NetworkTableEntry entry = limelight.table.getEntry(key);
-        //     Object value = entry.getValue().getValue();
-        //     SmartDashboard.putString("DIE DIED DIE" + key , ( key + ": " + value));
-        
-        // });
-      
+       
     }
     
   

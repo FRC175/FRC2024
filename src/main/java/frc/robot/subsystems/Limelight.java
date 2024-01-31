@@ -33,6 +33,34 @@ public final class Limelight implements Subsystem {
         
     }
 
+    public String getJson() {
+        String data = table.getEntry("json").getString("0");
+        return data;
+    }
+
+    public double[] getJsonData(String data, String target, int num) {
+
+        data = data.replace('"', '/');
+        int startIndex = -1;
+        int endIndex = -1;
+        double[] out = new double[num];
+        for (int i = 0; i < num; i++) {
+            if(data.contains(target)) {
+                startIndex = data.indexOf(target) + target.length();
+                data = data.substring(startIndex);
+                endIndex = data.indexOf(",");
+                String stringData = data.substring(0, endIndex);
+                double doubleData = (double)(Double.valueOf(stringData));
+                out[i] = doubleData;
+            } else {
+                out[i] = -1.0;
+            }
+        }  
+    
+        return out;
+        }
+
+
     public void switchPipe() {
 
         if (pipe == 0) pipe = 1;
@@ -40,12 +68,16 @@ public final class Limelight implements Subsystem {
         
     }
 
-    public double getVerticalAngle() {
-        return table.getEntry("ty").getDouble(0);
+    public double[] getVerticalAngle(String data) {
+        
+        double[] angles = getJsonData(data, "ty/:", numTargetsDetected(data));
+        return angles;
+
     }
 
-    public double getHorizontalAngle() {
-        return table.getEntry("tx").getDouble(0);
+    public double[] getHorizontalAngle(String data) {
+        double[] angles = getJsonData(data, "tx/:", numTargetsDetected(data));
+        return angles;
     }
 
 
@@ -53,24 +85,26 @@ public final class Limelight implements Subsystem {
         return table.getEntry("tv").getDouble(0) == 1; 
     }
 
-    public double getTargetID() {
-        return table.getEntry("tid").getDouble(0);
-    }
-    
- 
-    public String[] test() {
-    //     double[] detectedTargets = table.getEntry("t").getDoubleArray(new double [1]);
-    //     double[] explode = {1.0,2.0,3.0};
-    // //    double[] detectedTargets = {69.420, 2.0, 38.3};
-    //     if (detectedTargets[0] == 0) return explode;
-    //     else return detectedTargets;
+    public int numTargetsDetected(String data) {
+        int numDetected = 0;
+        double[] ids = getJsonData(data, "ID/:", 2);
+        for(double id : ids) {
+            if ( id != -1.0) {
+                numDetected++;
+            }
+        }
 
-    String data = table.getEntry("json").getString("0");
-    return new String[0];
-    
-        
+
+        return numDetected; 
+    }
+     
+     public double[] getTargetIds(String data) {
+        double[] ids = getJsonData(data, "ID/:", 2);
+        return ids;
+
     }
 
+  
     
 
     /**
