@@ -28,16 +28,10 @@ import frc.robot.commands.Drive.LockMode;
 import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
 import frc.robot.subsystems.Gyro;
-<<<<<<< HEAD
 import frc.robot.subsystems.Recorder;
 import frc.robot.subsystems.Drive.Drive;
 import frc.robot.subsystems.Intake; 
 import frc.robot.subsystems.Shooter;
-=======
-import frc.robot.subsystems.Limelight;
-import frc.robot.subsystems.Drive.Drive;
-import frc.robot.subsystems.Shuffleboard;
->>>>>>> 7bd801c2de0ab97a40000dc3c6ade2fd8a2c1086
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -62,8 +56,6 @@ public class RobotContainer {
   PrintWriter writer;
   
 
-  private final Shuffleboard shuffleboard;
-
   double lockAngle = 0;
 
   private static RobotContainer instance;
@@ -73,14 +65,10 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     drive = Drive.getInstance();
-<<<<<<< HEAD
     gyro = Gyro.getInstance();
     recorder = Recorder.getInstance();
     intake = Intake.getInstance(); 
     shooter = Shooter.getInstance();
-=======
-   gyro = Gyro.getInstance();
->>>>>>> 7bd801c2de0ab97a40000dc3c6ade2fd8a2c1086
 
     driverController = new Joystick(ControllerConstants.DRIVER_CONTROLLER_PORT);
     //operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -89,7 +77,6 @@ public class RobotContainer {
     autoChooser = new SendableChooser<>();
     
 
-    shuffleboard = Shuffleboard.getInstance();
 
     // Configure the default commands
     configureDefaultCommands();
@@ -112,11 +99,6 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // Arcade Drive
     drive.setDefaultCommand(new LockSwerve(driverController, drive, gyro));
-
-    
-  shuffleboard.setDefaultCommand(new RunCommand(() -> {
-    shuffleboard.logTargeted();
-  }, shuffleboard));
 
 
   }

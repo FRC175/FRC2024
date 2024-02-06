@@ -56,7 +56,6 @@ public final class Constants {
 
     }
 
-<<<<<<< HEAD
     public static final class IntakeConstants {
         public static final int intakeMotor = 10; 
     }
@@ -65,10 +64,6 @@ public final class Constants {
         public static final int shooterWheel = 11;
         public static final int shooterWheelSlave = 12;
     }
-=======
-    
-  
->>>>>>> 7bd801c2de0ab97a40000dc3c6ade2fd8a2c1086
 }
     
 
