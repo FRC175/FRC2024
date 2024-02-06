@@ -14,8 +14,8 @@ public final class Gyro implements Subsystem {
     private final Pigeon2 pigeon;
     
     /**
-     * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
-     * singleton design pattern can be found in the JavaDoc for {@link Drive::getInstance()}.
+     * The single instance of {link Drive} used to implement the "singleton" design pattern. A description of the
+     * singleton design pattern can be found in the JavaDoc for {link Drive::getInstance()}.
      */
     private static Gyro instance;
     
@@ -34,7 +34,7 @@ public final class Gyro implements Subsystem {
      * Usage:
      * <code>Drive drive = Drive.getInstance();</code>
      *
-     * @return The single instance of {@link Drive}
+     * return The single instance of {link Drive}
      */
     public static Gyro getInstance() {
         if (instance == null) {
