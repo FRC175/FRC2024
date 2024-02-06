@@ -54,4 +54,13 @@ public final class Constants {
 
         public static final double ENCODERTOANGLE = (double) 360/4096;
     }
+
+    public static final class IntakeConstants {
+        public static final int intakeMotor = 10; 
+    }
+
+    public static final class ShooterConstants {
+        public static final int shooterWheel = 11;
+        public static final int shooterWheelSlave = 12;
+    }
 }

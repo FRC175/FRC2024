@@ -4,9 +4,16 @@
 
 package frc.robot;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
+import frc.robot.models.AdvancedXboxController;
+import frc.robot.models.XboxButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -15,11 +22,16 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.RevShooterThenShoot;
+import frc.robot.commands.pickup;
 import frc.robot.commands.Drive.LockMode;
 import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
 import frc.robot.subsystems.Gyro;
+import frc.robot.subsystems.Recorder;
 import frc.robot.subsystems.Drive.Drive;
+import frc.robot.subsystems.Intake; 
+import frc.robot.subsystems.Shooter;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -33,10 +45,16 @@ public class RobotContainer {
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
   private final Drive drive;
   private final Gyro gyro;
+  private final Recorder recorder;
+  private final Intake intake; 
+  private final Shooter shooter; 
 
-  private final Joystick driverController, operatorController;
-
+  private final Joystick driverController/* , operatorController*/;
+  private final AdvancedXboxController operatorController;
   private final SendableChooser<Command> autoChooser;
+  
+  PrintWriter writer;
+  
 
   double lockAngle = 0;
 
@@ -48,11 +66,16 @@ public class RobotContainer {
   public RobotContainer() {
     drive = Drive.getInstance();
     gyro = Gyro.getInstance();
+    recorder = Recorder.getInstance();
+    intake = Intake.getInstance(); 
+    shooter = Shooter.getInstance();
 
     driverController = new Joystick(ControllerConstants.DRIVER_CONTROLLER_PORT);
-    operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
+    //operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
+    operatorController = new AdvancedXboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT, ControllerConstants.CONTROLLER_DEADBAND);
 
     autoChooser = new SendableChooser<>();
+    
 
     // Configure the default commands
     configureDefaultCommands();
@@ -94,6 +117,35 @@ public class RobotContainer {
     new Trigger(() -> driverController.getRawButton(11))
       .whileTrue(new LockMode(drive))
       .onFalse(new LockSwerve(driverController, drive, gyro));
+
+    new Trigger(() -> operatorController.getAButton())
+      .onTrue(new InstantCommand(() -> {
+        intake.setOpenLoop(-0.5);
+      }, intake))
+      .onFalse(new InstantCommand(() -> {
+        intake.setOpenLoop(0.0);
+      }, intake));
+      
+    new Trigger(() -> operatorController.getRightTriggerAxis() > 0)
+    .onTrue(new InstantCommand(() -> {
+    shooter.shooterSetOpenLoop(0.5);
+    }, shooter))
+    .onFalse(new InstantCommand(() -> {
+      shooter.shooterSetOpenLoop(0.0);
+    }, shooter));
+
+    new Trigger(() -> operatorController.getLeftTriggerAxis() > 0)
+    .onTrue(new pickup(intake))
+    .onFalse(new InstantCommand(() -> {
+      intake.setOpenLoop(0);
+    }, intake));
+
+    new Trigger(() -> operatorController.getBButton()) 
+    .onTrue(new RevShooterThenShoot(shooter, intake))
+    .onFalse(new InstantCommand(() -> {
+      intake.setOpenLoop(0);
+      shooter.shooterSetOpenLoop(0);
+    }));
   }
 
   private void configureAutoChooser() {

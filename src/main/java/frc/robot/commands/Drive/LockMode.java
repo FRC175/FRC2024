@@ -1,11 +1,7 @@
 package frc.robot.commands.Drive;
 
-import frc.robot.subsystems.Gyro;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drive.Drive;
-import frc.robot.utils.Utils;
 
 public class LockMode extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
