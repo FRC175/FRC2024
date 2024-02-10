@@ -56,6 +56,14 @@ public final class Constants {
 
     }
 
+    public static final class LimelightConstants {
+
+        public static final double mountHeight = 4.25;
+        public static final double mountAngle = 0.0;
+        public static final double[] tagHeights = {20.5, 20.0};
+
+    }
+
     
   
 }

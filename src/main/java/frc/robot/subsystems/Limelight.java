@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.LimelightConstants;
 
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -38,7 +39,7 @@ public final class Limelight implements Subsystem {
         return data;
     }
 
-    public double[] getJsonData(String data, String target, int num) {
+    private double[] getJsonData(String data, String target, int num) {
 
         data = data.replace('"', '/');
         int startIndex = -1;
@@ -69,8 +70,11 @@ public final class Limelight implements Subsystem {
     }
 
     public double[] getVerticalAngle(String data) {
+        double[] angles = new double [numTargetsDetected(data)];
+       
+            angles = getJsonData(data, "ty/:", numTargetsDetected(data));
+      
         
-        double[] angles = getJsonData(data, "ty/:", numTargetsDetected(data));
         return angles;
 
     }
@@ -89,7 +93,7 @@ public final class Limelight implements Subsystem {
         int numDetected = 0;
         double[] ids = getJsonData(data, "ID/:", 2);
         for(double id : ids) {
-            if ( id != -1.0) {
+            if ( id != 0) {
                 numDetected++;
             }
         }
@@ -103,9 +107,50 @@ public final class Limelight implements Subsystem {
         return ids;
 
     }
-
-  
     
+    private double targetAngleDegrees(double ty){
+        return ty + LimelightConstants.mountAngle;
+         
+
+    } 
+
+    private double targetAngleRadians(double ty) {
+       return targetAngleDegrees(ty)* (3.14159 / 180.0);
+    }
+
+    private double targetHeight(int tagIndex) {
+        return LimelightConstants.tagHeights[tagIndex] - LimelightConstants.mountHeight;
+    }
+
+    public double[] getDistance() {
+        int numTargets = numTargetsDetected(getJson());
+        double[] distances = new double[numTargets];
+        for (int i = 0; i <numTargets; i++) {
+            double d;
+           try { d = targetHeight(i)/(Math.tan(targetAngleRadians(getVerticalAngle(getJson())[i])));
+            distances[i] = d;
+           } catch(ArrayIndexOutOfBoundsException e) {
+
+           }
+
+        }
+        return distances;
+    }
+
+    public double getDistanceOfPointBetween(double[] ids) {
+        double distance = 0;
+        if (numTargetsDetected(getJson()) == 2) {
+            
+            double height = (targetHeight(0) + targetHeight(1))/2;
+            double a1 = targetAngleRadians(getVerticalAngle(getJson())[0]);
+            double a2;
+            a2 = targetAngleRadians(getVerticalAngle(getJson())[1]);
+            double angle = ( a1 + a2)/2;
+            distance = height/Math.tan(angle);
+        } 
+        return distance;
+    }
+
 
     /**
      * <code>getInstance()</code> is a crucial part of the "singleton" design pattern. This pattern is used when there
