@@ -118,20 +118,23 @@ public final class Limelight implements Subsystem {
        return targetAngleDegrees(ty)* (3.14159 / 180.0);
     }
 
-    private double targetHeight(int tagIndex) {
-        return LimelightConstants.tagHeights[tagIndex] - LimelightConstants.mountHeight;
+    private double targetHeight(int tag) {
+        return LimelightConstants.tagHeights[tag] - LimelightConstants.mountHeight;
     }
 
-    public double[] getDistance() {
-        int numTargets = numTargetsDetected(getJson());
-        double[] distances = new double[numTargets];
-        for (int i = 0; i <numTargets; i++) {
-            double d;
-           try { d = targetHeight(i)/(Math.tan(targetAngleRadians(getVerticalAngle(getJson())[i])));
+    public double[] getDistance(double[] ids) {
+            int numTargets = numTargetsDetected(getJson());
+            double[] distances = new double[numTargets];
+            int i = 0;
+            for (double id: ids) {
+                double d;
+               try { d = targetHeight((int)(id))/(Math.tan(targetAngleRadians(getVerticalAngle(getJson())[i])));
             distances[i] = d;
            } catch(ArrayIndexOutOfBoundsException e) {
 
            }
+        
+           i++;
 
         }
         return distances;

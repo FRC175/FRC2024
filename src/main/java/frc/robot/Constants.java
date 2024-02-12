@@ -60,7 +60,7 @@ public final class Constants {
 
         public static final double mountHeight = 4.25;
         public static final double mountAngle = 0.0;
-        public static final double[] tagHeights = {20.5, 20.0};
+        public static final double[] tagHeights = {48.125, 48.125, 51.875, 51.875, 48.125, 48.125, 48.125, 48.125, 51.875, 51.875, 47.5, 47.5, 47.5, 47.5, 47.5, 47.5,};
 
     }
 

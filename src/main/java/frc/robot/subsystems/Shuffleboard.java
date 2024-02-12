@@ -59,9 +59,9 @@ public final class Shuffleboard implements Subsystem {
 
            }
         }
-        for (int i = 0; i < limelight.getDistance().length; i++) {
+        for (int i = 0; i < limelight.getDistance(limelight.getTargetIds(limelight.getJson())).length; i++) {
             try {
-               SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")dist", limelight.getDistance()[i]);
+               SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")dist", limelight.getDistance(limelight.getTargetIds(limelight.getJson()))[i]);
             } catch(ArrayIndexOutOfBoundsException e) {
                 
             }
