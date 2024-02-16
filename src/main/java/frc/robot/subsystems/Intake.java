@@ -16,7 +16,7 @@ public class Intake implements Subsystem {
     private static Intake instance; 
 
     private Intake() {
-        intakeMotor = new CANSparkMax(IntakeConstants.intakeMotor, CANSparkMaxLowLevel.MotorType.kBrushless);
+        intakeMotor = new CANSparkMax(IntakeConstants.INTAKE, CANSparkMaxLowLevel.MotorType.kBrushless);
         intakeMotor.setInverted(true);
         intakeMotor.restoreFactoryDefaults();
         intakeMotorEncoder = intakeMotor.getEncoder(); 

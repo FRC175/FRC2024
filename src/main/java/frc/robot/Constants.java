@@ -25,14 +25,14 @@ public final class Constants {
     
 
     public static final class DriveConstants {
-        public static final int frontRightDrive = 3;
-        public static final int frontRightRot = 2;
-        public static final int frontLeftDrive = 4;
-        public static final int frontLeftRot = 5;
-        public static final int backRightDrive = 6;
-        public static final int backRightRot = 7;
-        public static final int backLeftDrive = 8;
-        public static final int backLeftRot = 9;
+        public static final int frontRightDrive = 7;
+        public static final int frontRightRot = 8;
+        public static final int frontLeftDrive = 9;
+        public static final int frontLeftRot = 6;
+        public static final int backRightDrive = 3;
+        public static final int backRightRot = 2;
+        public static final int backLeftDrive = 5;
+        public static final int backLeftRot = 4;
 
         public static final double frontRightTurnAngle = 45;
         public static final double frontLeftTurnAngle = 135;
@@ -44,8 +44,8 @@ public final class Constants {
         public static final int backRightEncoder = 23;
         public static final int backLeftEncoder = 24;
 
-        public static final double frontRightBaseAngle = 0.31103515625;
-        public static final double frontLeftBaseAngle = 0.85791015625;
+        public static final double frontRightBaseAngle = 0.812744;
+        public static final double frontLeftBaseAngle = 0.470215;
         public static final double backRightBaseAngle = -0.02978515625;
         public static final double backLeftBaseAngle = 1.224609375;
 
@@ -57,12 +57,22 @@ public final class Constants {
     }
 
     public static final class IntakeConstants {
-        public static final int intakeMotor = 10; 
+        public static final int INTAKE = 12; 
     }
 
     public static final class ShooterConstants {
-        public static final int shooterWheel = 11;
-        public static final int shooterWheelSlave = 12;
+        public static final int TOP = 13;
+        public static final int BOTTOM = 14;
+    }
+
+    public static final class LiftConstants {
+        public static final int LEFT = 16;
+        public static final int RIGHT = 15; 
+    }
+
+    public static final class ArmConstants {
+        public static final int ARM_RIGHT = 10; 
+        public static final int ARM_LEFT = 11; 
     }
 }
     

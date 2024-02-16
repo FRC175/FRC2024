@@ -10,12 +10,12 @@ public class RevShooterThenShoot extends SequentialCommandGroup {
     
     public RevShooterThenShoot(Shooter shooter, Intake intake) {
        addCommands(
-            new RevShooter(shooter, intake, 3600),
+            new RevShooter(shooter, intake, 4500, 3500),
             new InstantCommand(() -> intake.setOpenLoop(0.25)),
-            new WaitCommand(2), 
+            new WaitCommand(0.25), 
             new InstantCommand(() -> {
                 intake.setOpenLoop(0);
-                shooter.shooterSetOpenLoop(0);
+                shooter.shooterSetOpenLoop(0,0);
             })
        ); 
    }

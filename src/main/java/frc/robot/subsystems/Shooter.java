@@ -12,19 +12,19 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 
 
 public class Shooter implements Subsystem {
-    private final CANSparkMax shooterWheel;
-    private final CANSparkMax shooterWheelSlave;
-    private final RelativeEncoder shooterWheelEncoder, shooterWheelSlaveEncoder;
+    private final CANSparkMax top;
+    private final CANSparkMax bottom;
+    private final RelativeEncoder topEncoder, bottomEncoder;
 
     private static Shooter instance;
 
 private Shooter() {
-    shooterWheel = new CANSparkMax(ShooterConstants.shooterWheel, CANSparkMaxLowLevel.MotorType.kBrushless);
-    shooterWheelSlave = new CANSparkMax(ShooterConstants.shooterWheelSlave, CANSparkMaxLowLevel.MotorType.kBrushless);
+    top = new CANSparkMax(ShooterConstants.TOP, CANSparkMaxLowLevel.MotorType.kBrushless);
+    bottom = new CANSparkMax(ShooterConstants.BOTTOM, CANSparkMaxLowLevel.MotorType.kBrushless);
     configureSparks();
 
-    shooterWheelEncoder = shooterWheel.getEncoder();
-    shooterWheelSlaveEncoder = shooterWheelSlave.getEncoder();
+    topEncoder = top.getEncoder();
+    bottomEncoder = bottom.getEncoder();
 }
 
 public static Shooter getInstance() {
@@ -38,35 +38,44 @@ public static Shooter getInstance() {
 private void configureSparks() {
 
 
-    shooterWheel.restoreFactoryDefaults();
-    shooterWheel.setInverted(false);
+    
 
-    shooterWheelSlave.restoreFactoryDefaults();
-    shooterWheelSlave.follow(shooterWheel);
-    shooterWheelSlave.setInverted(true);
+    bottom.restoreFactoryDefaults();
+    
+    bottom.setInverted(true);
+
+    top.restoreFactoryDefaults();
+    // shooterWheel.follow(shooterWheelSlave);
+    top.setInverted(true);
     
 }
 
-public void shooterSetOpenLoop(double demand) {
-    SmartDashboard.putNumber("Demand", demand);
-    shooterWheel.set(demand);
-    shooterWheelSlave.set(demand);
+public void shooterSetOpenLoop(double demandTop, double demandBot) {
+    // SmartDashboard.putNumber("Demand", demand);
+    SmartDashboard.putNumber("Average RPM", getAverageShooterRPM());
+    SmartDashboard.putNumber("Bottom RPM", getBottomRPM());
+    SmartDashboard.putNumber("Top RPM", getTopRPM());
+    System.out.println("Average RPM: " + getAverageShooterRPM());
+    System.out.println("Bottom RPM: " + getBottomRPM());
+    System.out.println("Top RPM: " + getTopRPM());
+    top.set(demandTop);
+    bottom.set(demandBot);
 }
 
-public double getShooterRPM() {
-    return shooterWheelEncoder.getVelocity();
+public double getTopRPM() {
+    return topEncoder.getVelocity();
 }
 
-public double getShooterSlaveRPM() {
-    return shooterWheelSlaveEncoder.getVelocity();
+public double getBottomRPM() {
+    return bottomEncoder.getVelocity();
 }
 
 public double getAverageShooterRPM() {
-    return (getShooterRPM() + getShooterSlaveRPM()) / 2;
+    return (getTopRPM() + getBottomRPM()) / 2;
 }
 
 public void turnOffShooter() {
-    shooterSetOpenLoop(0);
+    shooterSetOpenLoop(0, 0);
 
 }
 

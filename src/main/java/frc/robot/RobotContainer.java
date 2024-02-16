@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.commands.Climb;
+import frc.robot.commands.DeployArm;
 import frc.robot.commands.RevShooterThenShoot;
 import frc.robot.commands.pickup;
 import frc.robot.commands.Drive.LockMode;
@@ -32,6 +34,8 @@ import frc.robot.subsystems.Recorder;
 import frc.robot.subsystems.Drive.Drive;
 import frc.robot.subsystems.Intake; 
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Lift;
+import frc.robot.subsystems.Arm;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -48,7 +52,8 @@ public class RobotContainer {
   private final Recorder recorder;
   private final Intake intake; 
   private final Shooter shooter; 
-
+  private final Lift lift; 
+  private final Arm arm; 
   private final Joystick driverController/* , operatorController*/;
   private final AdvancedXboxController operatorController;
   private final SendableChooser<Command> autoChooser;
@@ -69,6 +74,8 @@ public class RobotContainer {
     recorder = Recorder.getInstance();
     intake = Intake.getInstance(); 
     shooter = Shooter.getInstance();
+    lift = Lift.getInstance(); 
+    arm = Arm.getInstance();
 
     driverController = new Joystick(ControllerConstants.DRIVER_CONTROLLER_PORT);
     //operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -98,7 +105,7 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     // Arcade Drive
-    drive.setDefaultCommand(new LockSwerve(driverController, drive, gyro));
+    drive.setDefaultCommand(new Swerve(driverController, drive, gyro));
 
 
   }
@@ -114,9 +121,9 @@ public class RobotContainer {
     new Trigger(() -> new JoystickButton(driverController, 12).getAsBoolean())
       .onTrue(new InstantCommand(() -> gyro.resetGyro(), gyro));
 
-    new Trigger(() -> driverController.getTrigger())
-      .whileTrue(new Swerve(driverController, drive, gyro))
-      .whileFalse(new LockSwerve(driverController, drive, gyro));
+    // new Trigger(() -> driverController.getTrigger())
+    //   .whileTrue(new Swerve(driverController, drive, gyro))
+    //   .whileFalse(new LockSwerve(driverController, drive, gyro));
 
     new Trigger(() -> driverController.getRawButton(11))
       .whileTrue(new LockMode(drive))
@@ -130,12 +137,13 @@ public class RobotContainer {
         intake.setOpenLoop(0.0);
       }, intake));
       
-    new Trigger(() -> operatorController.getRightTriggerAxis() > 0)
+    new Trigger(() -> operatorController.getBButton() )
     .onTrue(new InstantCommand(() -> {
-    shooter.shooterSetOpenLoop(0.5);
+    shooter.shooterSetOpenLoop(0.5,0.5);
+    // System.out.println("const");
     }, shooter))
     .onFalse(new InstantCommand(() -> {
-      shooter.shooterSetOpenLoop(0.0);
+      shooter.shooterSetOpenLoop(0.0, 0.0);
     }, shooter));
 
     new Trigger(() -> operatorController.getLeftTriggerAxis() > 0)
@@ -144,13 +152,26 @@ public class RobotContainer {
       intake.setOpenLoop(0);
     }, intake));
 
-    new Trigger(() -> operatorController.getBButton()) 
+    new Trigger(() -> operatorController.getRightTriggerAxis() > 0) 
     .onTrue(new RevShooterThenShoot(shooter, intake))
     .onFalse(new InstantCommand(() -> {
       intake.setOpenLoop(0);
-      shooter.shooterSetOpenLoop(0);
+      shooter.shooterSetOpenLoop(0, 0);
     }));
-  }
+
+    new Trigger(() -> operatorController.getRightBumper())
+    .onTrue(new Climb(lift))
+    .onFalse(new InstantCommand(() -> {
+      lift.setLiftOpenLoop(0);
+    }));
+
+    new Trigger(() -> operatorController.getYButton())
+    .onTrue(new DeployArm(arm))
+    .onFalse(new InstantCommand(() -> {
+      arm.setArmOpenLoop(0,0);
+    }));
+    }
+  
 
   private void configureAutoChooser() {
     autoChooser.setDefaultOption("Nothing", new WaitCommand(0));;
@@ -167,3 +188,4 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 }
+
