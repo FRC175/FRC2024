@@ -7,6 +7,7 @@ package frc.robot;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.concurrent.CyclicBarrier;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
@@ -29,6 +30,7 @@ import frc.robot.commands.pickup;
 import frc.robot.commands.Drive.LockMode;
 import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
+import frc.robot.commands.CycleColor;
 import frc.robot.subsystems.Gyro;
 import frc.robot.subsystems.Recorder;
 import frc.robot.subsystems.Drive.Drive;
@@ -36,6 +38,7 @@ import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Lift;
 import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.LED;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -54,6 +57,7 @@ public class RobotContainer {
   private final Shooter shooter; 
   private final Lift lift; 
   private final Arm arm; 
+  private final LED led; 
   private final Joystick driverController/* , operatorController*/;
   private final AdvancedXboxController operatorController;
   private final SendableChooser<Command> autoChooser;
@@ -76,6 +80,7 @@ public class RobotContainer {
     shooter = Shooter.getInstance();
     lift = Lift.getInstance(); 
     arm = Arm.getInstance();
+    led = LED.getInstance(); 
 
     driverController = new Joystick(ControllerConstants.DRIVER_CONTROLLER_PORT);
     //operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
@@ -152,6 +157,11 @@ public class RobotContainer {
       intake.setOpenLoop(0);
     }, intake));
 
+    new Trigger (() -> operatorController.getPOV() == 180)
+    .onTrue(new InstantCommand(() -> {
+      intake.setOpenLoop(-1);
+    }));
+
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0) 
     .onTrue(new RevShooterThenShoot(shooter, intake))
     .onFalse(new InstantCommand(() -> {
@@ -159,7 +169,7 @@ public class RobotContainer {
       shooter.shooterSetOpenLoop(0, 0);
     }));
 
-    new Trigger(() -> operatorController.getRightBumper())
+    new Trigger(() -> operatorController.getXButton())
     .onTrue(new Climb(lift))
     .onFalse(new InstantCommand(() -> {
       lift.setLiftOpenLoop(0);
@@ -170,6 +180,12 @@ public class RobotContainer {
     .onFalse(new InstantCommand(() -> {
       arm.setArmOpenLoop(0,0);
     }));
+
+    new Trigger(() -> operatorController.getRightBumper())
+    .onTrue(new CycleColor(led, true)); 
+
+    new Trigger(() -> operatorController.getLeftBumper())
+    .onTrue(new CycleColor(led, false));
     }
   
 
