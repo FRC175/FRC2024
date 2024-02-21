@@ -157,10 +157,10 @@ public class RobotContainer {
       intake.setOpenLoop(0);
     }, intake));
 
-    new Trigger (() -> operatorController.getPOV() == 180)
-    .onTrue(new InstantCommand(() -> {
-      intake.setOpenLoop(-1);
-    }));
+    // new Trigger (() -> operatorController.getPOV() == 180)
+    // .onTrue(new InstantCommand(() -> {
+    //   intake.setOpenLoop(-1);
+    // }));
 
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0) 
     .onTrue(new RevShooterThenShoot(shooter, intake))

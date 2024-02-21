@@ -3,6 +3,7 @@ package frc.robot.subsystems.Drive;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.Vector;
@@ -14,6 +15,7 @@ public class SwerveModule {
 
     private final CANcoder encoder;
     private final CANSparkMax drive, turn;
+    private final RelativeEncoder driveEncoder;
     private final double turnAngle;
     private double goalAngle;
     private static int id;
@@ -36,6 +38,7 @@ public class SwerveModule {
     public SwerveModule(int drive, int turn, int encoder, double baseAngle, double basePosition) {
         this.drive = new CANSparkMax(drive, CANSparkMaxLowLevel.MotorType.kBrushless);
         this.turn = new CANSparkMax(turn, CANSparkMaxLowLevel.MotorType.kBrushless);
+        this.driveEncoder = this.drive.getEncoder();
         this.encoder = new CANcoder(encoder);
         this.turnAngle = baseAngle;
         this.num = id++;
@@ -155,6 +158,10 @@ public class SwerveModule {
 
     public double encoderToAngle(double encoderVal) {
         return (((encoderVal * 360)  % 360) + 360) % 360;
+    }
+
+    public double getDriveEncoder() {
+        return driveEncoder.getPosition();
     }
 
     public double getAngle() {

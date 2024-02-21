@@ -151,4 +151,17 @@ public final class Drive implements Subsystem {
         backRight.turnOpenLoop(br);
         backLeft.turnOpenLoop(bl);
     }
+
+    public double getFRPosition() {
+        return frontRight.getDriveEncoder();
+    }
+    public double getFLPosition() {
+        return frontLeft.getDriveEncoder();
+    }
+    public double getBRPosition() {
+        return backRight.getDriveEncoder();
+    }
+    public double getBLPosition() {
+        return backLeft.getDriveEncoder();
+    }
 }
