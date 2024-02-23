@@ -11,12 +11,12 @@ public class Arm implements Subsystem {
     private static Arm instance; 
 
     private final CANSparkMax armMaster, armSlave; 
-    private final DutyCycleEncoder armEncoder; 
+    // private final DutyCycleEncoder armEncoder; 
 
     private Arm() {
-        armMaster = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
+        armMaster = new CANSparkMax(ArmConstants.ARM_RIGHT, CANSparkMax.MotorType.kBrushless);
         armSlave = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
-        armEncoder = new DutyCycleEncoder(1);
+        // armEncoder = new DutyCycleEncoder(1);
         
 
         configureSparks();
@@ -45,11 +45,12 @@ public class Arm implements Subsystem {
     }
 
     public double getPosition() {
-        return -1 * armEncoder.getAbsolutePosition();
+        // return -1 * armEncoder.getAbsolutePosition();
+        return -1;
     }
    
 
     public void resetEncoders() {
-        armEncoder.reset();
-}
+        // armEncoder.reset();
+    }
 }

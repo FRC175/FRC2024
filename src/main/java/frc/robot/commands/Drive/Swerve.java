@@ -31,8 +31,8 @@ public class Swerve extends CommandBase {
     @Override
     public void execute() {
         drive.swerve(
-            Utils.deadband(joy.getX(), 0.05, travSpeed), 
-            Utils.deadband(joy.getY(), 0.05, travSpeed), 
+            Utils.deadband(joy.getX(), 0.1, travSpeed), 
+            Utils.deadband(joy.getY(), 0.1, travSpeed), 
             Utils.deadband(joy.getTwist(), 0.25) * -1 * (1-travSpeed), 
             gyro.getYaw());
         drive.postEncoders();

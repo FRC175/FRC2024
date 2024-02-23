@@ -12,7 +12,7 @@ public class Lift implements Subsystem  {
     
     private final CANSparkMax leftLift, rightLift; 
 
-    private final DutyCycleEncoder leftEncoder, rightEncoder; 
+    // private final DutyCycleEncoder leftEncoder, rightEncoder; 
 
     private static Lift instance; 
 
@@ -20,8 +20,8 @@ public class Lift implements Subsystem  {
         leftLift = new CANSparkMax(LiftConstants.LEFT, CANSparkMaxLowLevel.MotorType.kBrushless);
         rightLift = new CANSparkMax(LiftConstants.RIGHT, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-        leftEncoder = new DutyCycleEncoder(1);
-        rightEncoder = new DutyCycleEncoder(0);
+        // leftEncoder = new DutyCycleEncoder(1);
+        // rightEncoder = new DutyCycleEncoder(0);
 
     }
 
@@ -96,16 +96,18 @@ public class Lift implements Subsystem  {
     }
 
     public double getRightPosition() {
-        return -rightEncoder.getDistance();
+        // return -rightEncoder.getDistance();
+        return -1;
         
     }
     public double getLeftPosition() {
-        return leftEncoder.getDistance();
+        // return leftEncoder.getDistance();
+        return -1;
     }
 
     public void resetEncoders() {
-        leftEncoder.reset();
-        rightEncoder.reset();
-}
+        // leftEncoder.reset();
+        // rightEncoder.reset();
+    }
 
 }

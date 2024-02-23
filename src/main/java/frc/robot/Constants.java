@@ -46,8 +46,8 @@ public final class Constants {
 
         public static final double frontRightBaseAngle = 0.812744;
         public static final double frontLeftBaseAngle = 0.470215;
-        public static final double backRightBaseAngle = -0.02978515625;
-        public static final double backLeftBaseAngle = 1.224609375;
+        public static final double backRightBaseAngle = 0.702637;
+        public static final double backLeftBaseAngle = 0.599609;
 
 
         public static final int PIDGEON = 20;
