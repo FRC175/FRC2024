@@ -10,14 +10,14 @@ public class Arm implements Subsystem {
 
     private static Arm instance; 
 
-    private final CANSparkMax armMoverRight, armMoverLeft; 
-    private final DutyCycleEncoder armMoverRightEncoder, armMoverLeftEncoder; 
+    private final CANSparkMax armMaster, armSlave; 
+    private final DutyCycleEncoder armEncoder; 
 
     private Arm() {
-        armMoverRight = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
-        armMoverLeft = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
-        armMoverRightEncoder = new DutyCycleEncoder(0);
-        armMoverLeftEncoder = new DutyCycleEncoder(1); 
+        armMaster = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
+        armSlave = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
+        armEncoder = new DutyCycleEncoder(1);
+        
 
         configureSparks();
     }
@@ -31,28 +31,25 @@ public class Arm implements Subsystem {
 	}
 
     private void configureSparks() {
-        armMoverRight.restoreFactoryDefaults();
-        armMoverRight.setInverted(false);
+        armMaster.restoreFactoryDefaults();
+        armMaster.setInverted(false);
 
-        armMoverLeft.restoreFactoryDefaults();
-        armMoverLeft.setInverted(true);
+        
+        armSlave.restoreFactoryDefaults();
+        armSlave.follow(armMaster); 
+        armSlave.setInverted(true);
     }
     
-    public void setArmOpenLoop(double rightDemand, double leftDemand) {
-        armMoverRight.set(rightDemand);
-        armMoverLeft.set(leftDemand); 
+    public void setArmOpenLoop(double demand) {
+        armMaster.set(demand);
     }
 
-    public double getRightPosition() {
-        return -armMoverRightEncoder.getDistance();
-        
+    public double getPosition() {
+        return -1 * armEncoder.getAbsolutePosition();
     }
-    public double getLeftPosition() {
-        return armMoverLeftEncoder.getDistance();
-    }
+   
 
     public void resetEncoders() {
-        armMoverLeftEncoder.reset();
-        armMoverRightEncoder.reset();
+        armEncoder.reset();
 }
 }

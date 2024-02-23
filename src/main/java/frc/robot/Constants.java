@@ -73,6 +73,10 @@ public final class Constants {
     public static final class ArmConstants {
         public static final int ARM_RIGHT = 10; 
         public static final int ARM_LEFT = 11; 
+        public static final double REST = 0;
+        public static final double AMP = 0;
+        public static final double SPEAKER = 0;
+        public static final double INTAKE = 0;
     }
 }
     
