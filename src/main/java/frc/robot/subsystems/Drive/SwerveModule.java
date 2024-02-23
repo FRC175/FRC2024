@@ -8,6 +8,7 @@ import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.utils.Vector;
 
+
 /**
  * A class which represents a drive-turn motor combination, used for "Swerve Drive".
  */
@@ -108,7 +109,7 @@ public class SwerveModule {
         if (Math.abs(delta) > 90) {
             goalAngle = (goalAngle + 180) % 360;
             reversed = true;
-        } else {
+        } else { 
             reversed = false;
         }
 
@@ -149,6 +150,7 @@ public class SwerveModule {
         }
     }
 
+ 
     public double findDelta(double goalAngle) {
         // double val = controller.calculate(encoderToAngle(encoder.getAbsolutePosition().getValue()), goalAngle-gyroAngle);
         double currentAngle = getAngle();
