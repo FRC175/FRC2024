@@ -46,6 +46,8 @@ public class SwerveModule {
         this.goalAngle = 0;
         this.basePosition = basePosition;
         this.reversed = false;
+
+        this.driveEncoder.setPosition(0);
     }
 
     /**
@@ -166,8 +168,20 @@ public class SwerveModule {
         return driveEncoder.getPosition();
     }
 
+    public double getDriveDistance() {
+        return (getDriveEncoder() / 6.75) * 0.319;
+    }
+
     public double getAngle() {
         return encoderToAngle(getShiftedEncoder());
+    }
+
+    public double getOdometryAngle() {
+        if (getAngle() > 180) {
+            return -(360-getAngle());
+        } else {
+            return getAngle();
+        }
     }
 
     public double getEncoder() {

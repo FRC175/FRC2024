@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.ArmConstants;
 
@@ -10,15 +11,18 @@ public class Arm implements Subsystem {
 
     private static Arm instance; 
 
-    private final CANSparkMax armMaster, armSlave; 
-    // private final DutyCycleEncoder armEncoder; 
+    private final CANSparkMax armMaster, armSlave;
+    
+    private double armGoalPosition;
+    private final DutyCycleEncoder armEncoder; 
 
     private Arm() {
-        armMaster = new CANSparkMax(ArmConstants.ARM_RIGHT, CANSparkMax.MotorType.kBrushless);
-        armSlave = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
-        // armEncoder = new DutyCycleEncoder(1);
-        
+        armMaster = new CANSparkMax(ArmConstants.ARM_LEFT, CANSparkMax.MotorType.kBrushless);
+        armSlave = new CANSparkMax(ArmConstants.ARM_RIGHT, CANSparkMax.MotorType.kBrushless);
+        armEncoder = new DutyCycleEncoder(1);
 
+        armGoalPosition = ArmConstants.REST;
+        
         configureSparks();
     }
 
@@ -32,25 +36,41 @@ public class Arm implements Subsystem {
 
     private void configureSparks() {
         armMaster.restoreFactoryDefaults();
-        armMaster.setInverted(false);
+        // armMaster.setInverted(false);
 
         
         armSlave.restoreFactoryDefaults();
-        armSlave.follow(armMaster); 
-        armSlave.setInverted(true);
+        // armSlave.setInverted(true);
+        // armSlave.follow(armMaster); 
+        
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Current Master", armMaster.getOutputCurrent());
+        SmartDashboard.putNumber("Current Slave", armSlave.getOutputCurrent());
     }
     
     public void setArmOpenLoop(double demand) {
-        armMaster.set(demand);
+        armMaster.set(-demand);
+        armSlave.set(demand);
     }
 
     public double getPosition() {
-        // return -1 * armEncoder.getAbsolutePosition();
-        return -1;
+        return armEncoder.getAbsolutePosition();
+        // return -1;
     }
-   
+
+    public double getArmGoalPosition() {
+        return armGoalPosition;
+    }
+
+    public void setArmGoalPosition(double armGoalPosition) {
+        this.armGoalPosition = armGoalPosition;
+    }
 
     public void resetEncoders() {
-        // armEncoder.reset();
+        // armEncoder.setPositionOffset(0.906249272656232);
+        armEncoder.reset();
     }
 }

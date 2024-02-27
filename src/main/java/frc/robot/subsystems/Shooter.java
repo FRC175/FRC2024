@@ -42,11 +42,11 @@ private void configureSparks() {
 
     bottom.restoreFactoryDefaults();
     
-    bottom.setInverted(true);
+    bottom.setInverted(false);
 
     top.restoreFactoryDefaults();
     // shooterWheel.follow(shooterWheelSlave);
-    top.setInverted(true);
+    top.setInverted(false);
     
 }
 

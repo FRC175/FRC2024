@@ -35,7 +35,47 @@ public final class Shuffleboard implements Subsystem {
 
     public void logTargeted() {
         SmartDashboard.putBoolean("apriltag", limelight.targetDetected());
-        SmartDashboard.putNumber("ID", limelight.getTargetID());
+        SmartDashboard.putNumber("numberApriltags", limelight.numTargetsDetected(limelight.getJson()));
+        for (int i = 0; i < limelight.getTargetIds(limelight.getJson()).length; i++) {
+            try {
+                SmartDashboard.putNumber("apriltag" + (i + 1), limelight.getTargetIds(limelight.getJson())[i]);
+            } catch(ArrayIndexOutOfBoundsException e) {
+
+            }
+            }
+        for (int i = 0; i < limelight.getVerticalAngle(limelight.getJson()).length; i++) {
+            try {
+                SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")verticalOff", limelight.getVerticalAngle(limelight.getJson())[i]);
+            } catch(ArrayIndexOutOfBoundsException e) {
+
+            }
+        }
+        for (int i = 0; i < limelight.getHorizontalAngle(limelight.getJson()).length; i++) {
+           try {
+
+            SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")horizontalOff", limelight.getHorizontalAngle(limelight.getJson())[i]);
+           }catch(ArrayIndexOutOfBoundsException e) {
+
+           }
+        }
+        for (int i = 0; i < limelight.getDistance(limelight.getTargetIds(limelight.getJson())).length; i++) {
+            try {
+               SmartDashboard.putNumber("("+limelight.getTargetIds(limelight.getJson())[i]+")dist", limelight.getDistance(limelight.getTargetIds(limelight.getJson()))[i]);
+            } catch(ArrayIndexOutOfBoundsException e) {
+                
+            }
+        }
+        try {
+            SmartDashboard.putNumber("distBetween tags", limelight.getDistanceOfPointBetween(limelight.getTargetIds(limelight.getJson())));
+        } 
+        catch(ArrayIndexOutOfBoundsException e) {
+
+        }
+        //SmartDashboard.putNumber("Prim ID", limelight.getTargetID());
+        // PLACEHOLDER CODE - smartdashboard is being weird about adding arrays
+        SmartDashboard.putNumberArray("json", limelight.getTargetIds(limelight.getJson()));
+       
+       
     }
     
   

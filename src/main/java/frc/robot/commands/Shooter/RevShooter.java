@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Shooter;
 
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
@@ -30,7 +30,7 @@ public class RevShooter extends CommandBase {
   @Override
   public void execute() {
     intake.setOpenLoop(0);
-	  shooter.shooterSetOpenLoop(topRPM / 5500.0 + (topRPM - shooter.getTopRPM()) / 18000.0, bottomRPM / 5500.0 + (bottomRPM - shooter.getBottomRPM()) / 18000.0);
+	  shooter.shooterSetOpenLoop(topRPM / 5500.0 + (topRPM - shooter.getTopRPM()) / 15000.0, bottomRPM / 5000.0 + (bottomRPM - shooter.getBottomRPM()) / 15000.0);
   }
   
   @Override
@@ -40,7 +40,7 @@ public class RevShooter extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return Math.abs(shooter.getTopRPM() - topRPM) < 50 && Math.abs(shooter.getBottomRPM() - bottomRPM) < 50;
+    return Math.abs(shooter.getTopRPM() - topRPM) < 100 && Math.abs(shooter.getBottomRPM() - bottomRPM) < 100;
   }
 }
 

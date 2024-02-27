@@ -13,9 +13,8 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
-import frc.robot.models.AdvancedXboxController;
-import frc.robot.models.XboxButton;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -26,15 +25,16 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.Climb;
 import frc.robot.commands.DeployArm;
-import frc.robot.commands.RevShooterThenShoot;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.pickup;
+import frc.robot.commands.AutoModes.ShootFromFrontSubwoofer;
 import frc.robot.commands.Drive.LockMode;
 import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
-import frc.robot.subsystems.Gyro;
-import frc.robot.subsystems.Recorder;
+import frc.robot.commands.Drive.SwerveToDist;
+import frc.robot.commands.Shooter.RevShooterThenShoot;
 import frc.robot.subsystems.Drive.Drive;
+import frc.robot.utils.Controller;
 import frc.robot.subsystems.Intake; 
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Lift;
@@ -51,14 +51,12 @@ public class RobotContainer {
   // private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   // private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
   private final Drive drive;
-  private final Gyro gyro;
-  private final Recorder recorder;
   private final Intake intake; 
   private final Shooter shooter; 
   private final Lift lift; 
   private final Arm arm; 
-  private final Joystick driverController/* , operatorController*/;
-  private final AdvancedXboxController operatorController;
+  private final Controller driverController/* , operatorController*/;
+  private final XboxController operatorController;
   private final SendableChooser<Command> autoChooser;
   
   PrintWriter writer;
@@ -73,16 +71,14 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     drive = Drive.getInstance();
-    gyro = Gyro.getInstance();
-    recorder = Recorder.getInstance();
     intake = Intake.getInstance(); 
     shooter = Shooter.getInstance();
     lift = Lift.getInstance(); 
     arm = Arm.getInstance();
 
-    driverController = new Joystick(ControllerConstants.DRIVER_CONTROLLER_PORT);
+    driverController = new Controller(new Joystick(ControllerConstants.DRIVER_CONTROLLER_PORT));
     //operatorController = new Joystick(ControllerConstants.OPERATOR_CONTROLLER_PORT);
-    operatorController = new AdvancedXboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT, ControllerConstants.CONTROLLER_DEADBAND);
+    operatorController = new XboxController(ControllerConstants.OPERATOR_CONTROLLER_PORT);
 
     autoChooser = new SendableChooser<>();
     
@@ -108,7 +104,19 @@ public class RobotContainer {
 
   private void configureDefaultCommands() {
     // Arcade Drive
-    drive.setDefaultCommand(new Swerve(driverController, drive, gyro));
+    drive.setDefaultCommand(new Swerve(driverController, drive));
+    // arm.setDefaultCommand(new RunCommand(() -> {
+    //   double input = 0;
+    //   if (operatorController.getRightY() > 0.05) {
+    //     input = 0.1;
+    //   } else if (operatorController.getRightY() < -0.05) {
+    //     input = -0.1;
+    //   }
+    //   arm.setArmOpenLoop(input);
+    //   SmartDashboard.putBoolean("Pickup Sensor", intake.isNotePresent());
+    //   SmartDashboard.putNumber("Arm Position", arm.getPosition());
+    // }, arm));
+    // arm.setDefaultCommand(new SetArmPosition(arm, 0.2, 0.4, false));
 
 
   }
@@ -123,36 +131,49 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     // Driver Joystick Button 12: Reset Gyro 
-    new Trigger(() -> new JoystickButton(driverController, 12).getAsBoolean())
-      .onTrue(new InstantCommand(() -> gyro.resetGyro(), gyro));
+    new Trigger(() -> driverController.getB12())
+      .onTrue(new InstantCommand(() -> drive.resetGyro()));
 
-    // new Trigger(() -> driverController.getTrigger())
-    //   .whileTrue(new Swerve(driverController, drive, gyro))
-    //   .whileFalse(new LockSwerve(driverController, drive, gyro));
+    new Trigger(() -> driverController.getTrigger())
+      .whileTrue(new LockSwerve(driverController, drive))
+      .whileFalse(new Swerve(driverController, drive));
     
     //Driver Joystick Button 11: Lock Mode 
-    new Trigger(() -> driverController.getRawButton(11))
+    new Trigger(() -> driverController.getA11())
       .whileTrue(new LockMode(drive))
-      .onFalse(new LockSwerve(driverController, drive, gyro));
+      .onFalse(new LockSwerve(driverController, drive));
 
     // Operator Controller A Button: Reverse Intake 
     new Trigger(() -> operatorController.getAButton())
       .onTrue(new InstantCommand(() -> {
         intake.setOpenLoop(-0.5);
+        shooter.shooterSetOpenLoop(-0.5, -0.5);
       }, intake))
       .onFalse(new InstantCommand(() -> {
         intake.setOpenLoop(0.0);
+        shooter.shooterSetOpenLoop(0, 0);
       }, intake));
-    
-    // Operator Controller B Button: Shoot in Speaker 
-    new Trigger(() -> operatorController.getBButton() )
+
+    // Operator Controller B Button: Amp 
+    new Trigger(() -> operatorController.getBButton())
     .onTrue(new InstantCommand(() -> {
-    shooter.shooterSetOpenLoop(0.5,0.5);
-    // System.out.println("const");
-    }, shooter))
+      intake.setOpenLoop(0.25);
+      shooter.shooterSetOpenLoop(0.25, 0.25);
+    }, intake, shooter))
     .onFalse(new InstantCommand(() -> {
-      shooter.shooterSetOpenLoop(0.0, 0.0);
-    }, shooter));
+      intake.setOpenLoop(0.0);
+      shooter.shooterSetOpenLoop(0, 0);
+    }, intake, shooter));
+    
+    // // Operator Controller B Button: Shoot in Speaker 
+    // new Trigger(() -> operatorController.getBButton() )
+    // .onTrue(new InstantCommand(() -> {
+    // shooter.shooterSetOpenLoop(0.5,0.5);
+    // // System.out.println("const");
+    // }, shooter))
+    // .onFalse(new InstantCommand(() -> {
+    //   shooter.shooterSetOpenLoop(0.0, 0.0);
+    // }, shooter));
 
     // Operator Controller Left Trigger: Intake 
     new Trigger(() -> operatorController.getLeftTriggerAxis() > 0)
@@ -167,19 +188,38 @@ public class RobotContainer {
     // }));
 
     // Operator Controller Right Trigger: Shoot into Speaker 
-    new Trigger(() -> operatorController.getRightTriggerAxis() > 0) 
-    .onTrue(new RevShooterThenShoot(shooter, intake))
+    new Trigger(() -> operatorController.getRightTriggerAxis() > 0.5) 
+    // .onTrue(new RevShooterThenShoot(shooter, intake))
+    // .onFalse(new InstantCommand(() -> {
+    //   intake.setOpenLoop(0);
+    //   shooter.shooterSetOpenLoop(0, 0);
+    // }, shooter, intake));
+    .onTrue(new InstantCommand(() -> {
+      intake.setOpenLoop(0.25);
+      shooter.shooterSetOpenLoop(0.25, 0.25);
+    }, intake, shooter))
     .onFalse(new InstantCommand(() -> {
-      intake.setOpenLoop(0);
+      intake.setOpenLoop(0.0);
       shooter.shooterSetOpenLoop(0, 0);
-    }));
+    }, intake, shooter));
 
-    // Operator Controller X Button: Climb 
-    new Trigger(() -> operatorController.getXButton())
-    .onTrue(new Climb(lift))
-    .onFalse(new InstantCommand(() -> {
-      lift.setLiftOpenLoop(0);
-    }));
+    // // Operator Controller X Button: Climb 
+    // new Trigger(() -> operatorController.getXButton())
+    // .onTrue(new Climb(lift))
+    // .onFalse(new InstantCommand(() -> {
+    //   lift.setLiftOpenLoop(0);
+    // }));
+
+    // // Operator Controller Right Stick: Test Arm
+    // new Trigger(() -> operatorController.getRightY() > 0.05)
+    //   .onTrue(new DeployArm(arm, Math.abs(operatorController.getRightY()) > 0.05 ? 0.1 : -0.1))
+    //   .onFalse(new InstantCommand( () -> {
+    //     arm.setArmOpenLoop(0);
+    //     SmartDashboard.putNumber("Arm Position", arm.getPosition());
+    //   }, arm));
+
+    // new Trigger(() -> operatorController.getBButton())
+    //   .onTrue(new InstantCommand(() -> arm.resetEncoders(), arm));
 
     // // Operator Controller Y Button: Deploy Arm
     // new Trigger(() -> operatorController.getYButton())
@@ -190,23 +230,31 @@ public class RobotContainer {
 
     // Operator DPad Down: Set Arm Intake Position
     new Trigger(() -> operatorController.getPOV() == 180)
-      .onTrue(new SetArmPosition(arm, ArmConstants.INTAKE, false, .2));
+      // .onTrue(new SetArmPosition(arm, 0.2, false, ArmConstants.INTAKE));
+      .onTrue(new InstantCommand(() -> {
+        arm.setArmGoalPosition(ArmConstants.INTAKE);
+      }));
 
     // Operator Dpad Up: Set Arm Amp Position 
-    new Trigger(() -> operatorController.getPOV() == 0)
-      .onTrue(new SetArmPosition(arm, ArmConstants.AMP, false, .2));
+    new Trigger(() -> operatorController.getPOV() == 90)
+      .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmConstants.AMP);}));
 
     // Operator DPad Right: Set Arm Speaker Position 
-    new Trigger(() -> operatorController.getPOV() == 90)
-      .onTrue(new SetArmPosition(arm, ArmConstants.SPEAKER, false, .2));
+    new Trigger(() -> operatorController.getPOV() == 0)
+      .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmConstants.SPEAKER);}));
 
     // Operator DPad Left: Set Arm Rest Position
     new Trigger(() -> operatorController.getPOV() == 270)
-      .onTrue(new SetArmPosition(arm, ArmConstants.REST, false, .2));
+      // .onTrue(new SetArmPosition(arm, 0.2, false, ArmConstants.REST));
+      .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmConstants.REST);}));
   }
 
   private void configureAutoChooser() {
-    autoChooser.setDefaultOption("Nothing", new WaitCommand(0));;
+    autoChooser.setDefaultOption("Nothing", new WaitCommand(0));
+    autoChooser.addOption("Drive to Park", new SwerveToDist(drive, 0.3, 45, 2000));
+    autoChooser.addOption("Shoot from Subwoofer", new ShootFromFrontSubwoofer(drive, shooter, intake, arm));
+
+    SmartDashboard.putData(autoChooser);
   }
 
 

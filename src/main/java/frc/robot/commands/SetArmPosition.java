@@ -11,56 +11,74 @@ public class SetArmPosition extends CommandBase {
    private final Arm arm; 
    private boolean isFinite; 
    private boolean hasHit = false; 
-   private double speed; 
-   private double armPosition; 
+   private double downSpeed;
+   private double upSpeed;
+   private double armGoalPosition;
+   private static final double DEADBAND = 0.001;
 
-    public SetArmPosition(Arm arm, double speed, boolean isFinite, double armPosition) {
-       this.arm = arm;
-       this.isFinite = isFinite;
-       this.speed = speed; 
-       this.armPosition = armPosition;
-       addRequirements(arm);
+    public SetArmPosition(Arm arm, double downSpeed, double upSpeed, boolean isFinite) {
+        this(arm, downSpeed, upSpeed, isFinite, arm.getArmGoalPosition());
+    }
+    
+
+    public SetArmPosition(Arm arm, double downSpeed, double upSpeed, boolean isFinite, double armGoalPosition) {
+        this.arm = arm;
+        this.isFinite = isFinite;
+        this.downSpeed = downSpeed;
+        this.upSpeed = upSpeed; 
+        // if (this.arm.getArmGoalPosition() != armGoalPosition) {
+        //     this.arm.setArmGoalPosition(armGoalPosition);
+        //     hasHit = false;
+        // }
+        this.armGoalPosition = armGoalPosition;
+        addRequirements(arm);
     }
 
     @Override
-  public void initialize() {
+    public void initialize() {
+        arm.setArmGoalPosition(armGoalPosition);
+    }
 
-  }
+    @Override
+    public void execute() {
 
-  @Override
-  public void execute() {
     
-    if (isFinite) {
-        if (arm.getPosition() < armPosition)
-            arm.setArmOpenLoop(-1 * speed);
-        else if (arm.getPosition() > armPosition)
-            arm.setArmOpenLoop(speed);
-    } else {
-        if (!hasHit) {
-            if (arm.getPosition() < armPosition - 0.1)
-                arm.setArmOpenLoop(-1 * speed);
-            else if (arm.getPosition() > armPosition + 0.1)
-                arm.setArmOpenLoop(speed);
-            else hasHit = true;
+        double armGoalPosition = arm.getArmGoalPosition();
+        SmartDashboard.putNumber("Arm Position", arm.getPosition());
+        SmartDashboard.putNumber("Goal Position: ", armGoalPosition);
+
+        if (isFinite) {
+            if (arm.getPosition() > armGoalPosition)
+                arm.setArmOpenLoop(-upSpeed);
+            else if (arm.getPosition() < armGoalPosition)
+                arm.setArmOpenLoop(+downSpeed);
         } else {
-            if (armPosition - arm.getPosition() > 0.1) {
-                arm.setArmOpenLoop(-0.1);
+            if (!hasHit) {
+                if (arm.getPosition() > armGoalPosition + DEADBAND)
+                    arm.setArmOpenLoop(-upSpeed);
+                else if (arm.getPosition() < armGoalPosition - DEADBAND)
+                    arm.setArmOpenLoop(+downSpeed);
+                else hasHit = true;
             } else {
-                arm.setArmOpenLoop(0);
+                if (arm.getPosition() - armGoalPosition > DEADBAND) {
+                    arm.setArmOpenLoop(-0.1);
+                } else if (Math.abs(arm.getPosition() - armGoalPosition) > 0.01) {
+                    hasHit = false;
+                } else {
+                    arm.setArmOpenLoop(0);
+                }
             }
         }
     }
-  }
   
-  @Override
-  public void end(boolean interrupted) {
+    @Override
+    public void end(boolean interrupted) {
+        arm.setArmOpenLoop(0);
+    }
 
-  }
-
-  @Override
-  public boolean isFinished() {
-    if (isFinite) return Math.abs(arm.getPosition() - armPosition) <= 0.1; // experiment with deadband
-        else return false;
-  }
+    @Override
+    public boolean isFinished() {
+    return isFinite && Math.abs(arm.getPosition() - arm.getArmGoalPosition()) <= DEADBAND; // experiment with deadband
+    }
 }
 

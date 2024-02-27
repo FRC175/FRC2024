@@ -1,13 +1,16 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Arm;
 
 public class DeployArm extends CommandBase {
     private final Arm arm; 
+    private double power;
     
-    public DeployArm(Arm arm) {
+    public DeployArm(Arm arm, double power) {
         this.arm = arm; 
+        this.power = power;
     }
     
 
@@ -19,7 +22,8 @@ public class DeployArm extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-       arm.setArmOpenLoop(.65);
+       arm.setArmOpenLoop(power);
+       SmartDashboard.getNumber("Arm Position", arm.getPosition());
     }
   
     // Called once the command ends or is interrupted.

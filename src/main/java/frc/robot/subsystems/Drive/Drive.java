@@ -2,6 +2,16 @@ package frc.robot.subsystems.Drive;
 
 import frc.robot.Constants.DriveConstants;
 import frc.robot.utils.Vector;
+
+import com.ctre.phoenix6.hardware.Pigeon2;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -11,6 +21,13 @@ public final class Drive implements Subsystem {
     // new left master TalonSRX).
     SwerveModule frontRight, frontLeft, backRight, backLeft;
     double lastValidAngle;
+
+    Pigeon2 pigeon;
+
+    Translation2d frontRightLocation, frontLeftLocation, backRightLocation, backLeftLocation;
+    SwerveDriveKinematics kinematics;
+    SwerveDriveOdometry odometry;
+    Pose2d pose;
     
     /**
      * The single instance of {@link Drive} used to implement the "singleton" design pattern. A description of the
@@ -25,6 +42,28 @@ public final class Drive implements Subsystem {
         backRight = new SwerveModule(DriveConstants.backRightDrive, DriveConstants.backRightRot, DriveConstants.backRightEncoder, DriveConstants.backRightTurnAngle, DriveConstants.backRightBaseAngle);
         backLeft = new SwerveModule(DriveConstants.backLeftDrive, DriveConstants.backLeftRot, DriveConstants.backLeftEncoder, DriveConstants.backLeftTurnAngle, DriveConstants.backLeftBaseAngle);
         configureSparks();
+
+        pigeon = new Pigeon2(DriveConstants.PIDGEON);
+
+        pose = new Pose2d(0, 0, new Rotation2d());
+
+        double HALF_WHEEL_BASE_WIDTH = 0.299; // meters
+
+
+        frontRightLocation = new Translation2d(HALF_WHEEL_BASE_WIDTH, -HALF_WHEEL_BASE_WIDTH);
+        frontLeftLocation = new Translation2d(HALF_WHEEL_BASE_WIDTH, HALF_WHEEL_BASE_WIDTH);
+        backRightLocation = new Translation2d(-HALF_WHEEL_BASE_WIDTH, -HALF_WHEEL_BASE_WIDTH);
+        backLeftLocation = new Translation2d(-HALF_WHEEL_BASE_WIDTH, HALF_WHEEL_BASE_WIDTH);
+
+        kinematics = new SwerveDriveKinematics(frontLeftLocation, frontRightLocation, backLeftLocation, backRightLocation);
+        odometry = new SwerveDriveOdometry(
+            kinematics, pigeon.getRotation2d(),
+            new SwerveModulePosition[] {
+              new SwerveModulePosition(0, new Rotation2d()),
+              new SwerveModulePosition(0, new Rotation2d()),
+              new SwerveModulePosition(0, new Rotation2d()),
+              new SwerveModulePosition(0, new Rotation2d())
+            }, pose);
 
         lastValidAngle = 0;
     }
@@ -85,6 +124,25 @@ public final class Drive implements Subsystem {
         SmartDashboard.putNumber("FrontLeftP", frontLeft.getEncoder());
         SmartDashboard.putNumber("BackRightP", backRight.getEncoder());
         SmartDashboard.putNumber("BackLeftP", backLeft.getEncoder());
+    }
+
+    @Override
+    public void periodic() {
+        // Get the rotation of the robot from the gyro.
+        var gyroAngle = pigeon.getRotation2d();
+
+        // Update the pose
+        pose = odometry.update(gyroAngle,
+        new SwerveModulePosition[] {
+            new SwerveModulePosition(frontLeft.getDriveDistance(), new Rotation2d(frontLeft.getOdometryAngle())), new SwerveModulePosition(frontRight.getDriveDistance(), new Rotation2d(frontRight.getOdometryAngle())),
+            new SwerveModulePosition(backLeft.getDriveDistance(), new Rotation2d(backLeft.getOdometryAngle())), new SwerveModulePosition(backRight.getDriveDistance(), new Rotation2d(backRight.getOdometryAngle()))
+        });
+
+        SmartDashboard.putNumber("X Position: ", getPose().getX());
+        SmartDashboard.putNumber("Y Position: ", getPose().getY());
+
+        SmartDashboard.putNumber("Distance: ", frontLeft.getDriveDistance());
+
     }
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
@@ -156,13 +214,29 @@ public final class Drive implements Subsystem {
         return frontRight.getDriveEncoder();
     }
     public double getFLPosition() {
-        return frontLeft.getDriveEncoder();
+        return frontLeft.getDriveDistance();
     }
     public double getBRPosition() {
         return backRight.getDriveEncoder();
     }
     public double getBLPosition() {
         return backLeft.getDriveEncoder();
+    }
+
+    public double getYaw() {
+        return ((pigeon.getYaw().getValue() % 360) + 360) % 360;
+    }
+
+    public void resetGyro() {
+        pigeon.setYaw(0);
+    }
+
+    public void postYaw() {
+        SmartDashboard.putNumber("Yee-Yaw", getYaw());
+    }
+
+    public Translation2d getPose() {
+        return pose.getTranslation();
     }
 
    

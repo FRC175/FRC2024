@@ -44,9 +44,9 @@ public final class Constants {
         public static final int backRightEncoder = 23;
         public static final int backLeftEncoder = 24;
 
-        public static final double frontRightBaseAngle = 0.812744;
+        public static final double frontRightBaseAngle = 0.318604;
         public static final double frontLeftBaseAngle = 0.470215;
-        public static final double backRightBaseAngle = 0.702637;
+        public static final double backRightBaseAngle = 0.208740;
         public static final double backLeftBaseAngle = 0.599609;
 
 
@@ -73,11 +73,23 @@ public final class Constants {
     public static final class ArmConstants {
         public static final int ARM_RIGHT = 10; 
         public static final int ARM_LEFT = 11; 
-        public static final double REST = 0;
-        public static final double AMP = 0;
-        public static final double SPEAKER = 0;
-        public static final double INTAKE = 0;
+        public static final double REST = 0.83;
+        public static final double AMP = 0.66;
+        public static final double SPEAKER = 0.85;
+        public static final double INTAKE = 0.900;
     }
+
+    public static final class LEDConstants {
+        public static final int BLINKIN_PORT = 0;
+    }
+    public static final class LimelightConstants {
+
+        public static final double mountHeight = 14.128;
+        public static final double mountAngle = 36.10;
+        public static final double[] tagHeights = {48.125, 48.125, 51.875, 51.875, 48.125, 48.125, 48.125, 48.125, 51.875, 51.875, 47.5, 47.5, 47.5, 47.5, 47.5, 47.5,};
+
+    }
+
 }
     
 

@@ -25,7 +25,7 @@ public class pickup extends CommandBase {
 
   @Override
   public void execute() {
-    intake.setOpenLoop(0.2);
+    intake.setOpenLoop(0.5);
   }
   
   @Override
