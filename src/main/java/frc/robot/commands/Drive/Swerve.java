@@ -33,8 +33,8 @@ public class Swerve extends CommandBase {
             Utils.deadband(joy.getLeftY(), 0.1, travSpeed), 
             Utils.deadband(joy.getTwist(), 0.25) * -1 * (1-travSpeed), 
             drive.getYaw());
-        drive.postEncoders();
-        drive.postYaw();
+        // drive.postEncoders();
+        // drive.postYaw();
     }
 
     @Override

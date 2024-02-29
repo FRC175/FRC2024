@@ -44,8 +44,7 @@ public class SetArmPosition extends CommandBase {
 
     
         double armGoalPosition = arm.getArmGoalPosition();
-        SmartDashboard.putNumber("Arm Position", arm.getPosition());
-        SmartDashboard.putNumber("Goal Position: ", armGoalPosition);
+        
 
         if (isFinite) {
             if (arm.getPosition() > armGoalPosition)

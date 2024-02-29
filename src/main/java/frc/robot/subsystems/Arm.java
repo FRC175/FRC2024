@@ -49,6 +49,8 @@ public class Arm implements Subsystem {
     public void periodic() {
         SmartDashboard.putNumber("Current Master", armMaster.getOutputCurrent());
         SmartDashboard.putNumber("Current Slave", armSlave.getOutputCurrent());
+        SmartDashboard.putNumber("Arm Position", getPosition());
+        SmartDashboard.putNumber("Goal Arm Position: ", getArmGoalPosition());
     }
     
     public void setArmOpenLoop(double demand) {

@@ -12,6 +12,7 @@ import java.util.concurrent.CyclicBarrier;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -113,8 +114,6 @@ public class RobotContainer {
     //     input = -0.1;
     //   }
     //   arm.setArmOpenLoop(input);
-    //   SmartDashboard.putBoolean("Pickup Sensor", intake.isNotePresent());
-    //   SmartDashboard.putNumber("Arm Position", arm.getPosition());
     // }, arm));
     // arm.setDefaultCommand(new SetArmPosition(arm, 0.2, 0.4, false));
 
@@ -141,7 +140,7 @@ public class RobotContainer {
     //Driver Joystick Button 11: Lock Mode 
     new Trigger(() -> driverController.getA11())
       .whileTrue(new LockMode(drive))
-      .onFalse(new LockSwerve(driverController, drive));
+      .onFalse(new Swerve(driverController, drive));
 
     // Operator Controller A Button: Reverse Intake 
     new Trigger(() -> operatorController.getAButton())
@@ -178,15 +177,23 @@ public class RobotContainer {
     // Operator Controller Left Trigger: Intake 
     new Trigger(() -> operatorController.getLeftTriggerAxis() > 0)
     .onTrue(new pickup(intake))
+    .whileTrue(new InstantCommand(() -> {
+      if (intake.isNotePresent()) {
+        operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+      } else {
+        operatorController.setRumble(RumbleType.kBothRumble, 0);
+      }
+    }))
     .onFalse(new InstantCommand(() -> {
       intake.setOpenLoop(0);
+      operatorController.setRumble(RumbleType.kBothRumble, 0);
     }, intake));
 
     // new Trigger (() -> operatorController.getPOV() == 180)
     // .onTrue(new InstantCommand(() -> {
     //   intake.setOpenLoop(-1);
     // }));
-
+    // selma stinks; rym too
     // Operator Controller Right Trigger: Shoot into Speaker 
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0.5) 
     // .onTrue(new RevShooterThenShoot(shooter, intake))

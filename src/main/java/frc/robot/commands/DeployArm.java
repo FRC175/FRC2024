@@ -23,7 +23,7 @@ public class DeployArm extends CommandBase {
     @Override
     public void execute() {
        arm.setArmOpenLoop(power);
-       SmartDashboard.getNumber("Arm Position", arm.getPosition());
+    //    SmartDashboard.getNumber("Arm Position", arm.getPosition());
     }
   
     // Called once the command ends or is interrupted.

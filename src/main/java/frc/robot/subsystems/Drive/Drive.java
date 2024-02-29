@@ -115,15 +115,15 @@ public final class Drive implements Subsystem {
     }
 
     public void postEncoders() {
-        SmartDashboard.putNumber("FrontRightD", frontRight.getAngle());
-        SmartDashboard.putNumber("FrontLeftD", frontLeft.getAngle());
-        SmartDashboard.putNumber("BackRightD", backRight.getAngle());
-        SmartDashboard.putNumber("BackLeftD", backLeft.getAngle());
+        // SmartDashboard.putNumber("FrontRightD", frontRight.getAngle());
+        // SmartDashboard.putNumber("FrontLeftD", frontLeft.getAngle());
+        // SmartDashboard.putNumber("BackRightD", backRight.getAngle());
+        // SmartDashboard.putNumber("BackLeftD", backLeft.getAngle());
 
-        SmartDashboard.putNumber("FrontRightP", frontRight.getEncoder());
-        SmartDashboard.putNumber("FrontLeftP", frontLeft.getEncoder());
-        SmartDashboard.putNumber("BackRightP", backRight.getEncoder());
-        SmartDashboard.putNumber("BackLeftP", backLeft.getEncoder());
+        // SmartDashboard.putNumber("FrontRightP", frontRight.getEncoder());
+        // SmartDashboard.putNumber("FrontLeftP", frontLeft.getEncoder());
+        // SmartDashboard.putNumber("BackRightP", backRight.getEncoder());
+        // SmartDashboard.putNumber("BackLeftP", backLeft.getEncoder());
     }
 
     @Override
@@ -143,11 +143,13 @@ public final class Drive implements Subsystem {
 
         SmartDashboard.putNumber("Distance: ", frontLeft.getDriveDistance());
 
+        postYaw();
+
     }
 
     public void swerve(double joyX, double joyY, double twist, double gyroAngle) {
         Vector transversal = new Vector(joyX, joyY * -1);
-        SmartDashboard.putNumber("Joystick Angle", transversal.getAngle());
+        // SmartDashboard.putNumber("Joystick Angle", transversal.getAngle());
 
         if (transversal.getMagnitude() < 0.001) {
             transversal.setAngle(lastValidAngle);
@@ -170,7 +172,7 @@ public final class Drive implements Subsystem {
 
     public void lockSwerve(double joyX, double joyY, double lockAngle, double gyroAngle) {
         Vector transversal = new Vector(joyX, joyY * -1);
-        SmartDashboard.putNumber("Joystick Angle", transversal.getAngle());
+        // SmartDashboard.putNumber("Joystick Angle", transversal.getAngle());
 
         if (transversal.getMagnitude() < 0.001) {
             transversal.setAngle(lastValidAngle);

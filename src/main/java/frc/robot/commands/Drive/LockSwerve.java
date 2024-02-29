@@ -34,9 +34,9 @@ public class LockSwerve extends CommandBase {
             Utils.deadband(joy.getLeftY(), 0.05, travSpeed), 
             (-1*joy.getPOV() + 360) % 360, 
             drive.getYaw());
-        drive.postEncoders();
-        drive.postYaw();
-        SmartDashboard.putBoolean("Trigger", joy.getTrigger());
+        // drive.postEncoders();
+        // drive.postYaw();
+        // SmartDashboard.putBoolean("Trigger", joy.getTrigger());
     }
 
     @Override

@@ -52,14 +52,20 @@ private void configureSparks() {
 
 public void shooterSetOpenLoop(double demandTop, double demandBot) {
     // SmartDashboard.putNumber("Demand", demand);
-    SmartDashboard.putNumber("Average RPM", getAverageShooterRPM());
-    SmartDashboard.putNumber("Bottom RPM", getBottomRPM());
-    SmartDashboard.putNumber("Top RPM", getTopRPM());
-    System.out.println("Average RPM: " + getAverageShooterRPM());
-    System.out.println("Bottom RPM: " + getBottomRPM());
-    System.out.println("Top RPM: " + getTopRPM());
+    // SmartDashboard.putNumber("Average RPM", getAverageShooterRPM());
+    // SmartDashboard.putNumber("Bottom RPM", getBottomRPM());
+    // SmartDashboard.putNumber("Top RPM", getTopRPM());
+    // System.out.println("Average RPM: " + getAverageShooterRPM());
+    // System.out.println("Bottom RPM: " + getBottomRPM());
+    // System.out.println("Top RPM: " + getTopRPM());
     top.set(demandTop);
     bottom.set(demandBot);
+}
+
+@Override
+public void periodic() {
+    SmartDashboard.putNumber("Top RPM", getTopRPM());
+    SmartDashboard.putNumber("Bottom RPM", getBottomRPM());
 }
 
 public double getTopRPM() {

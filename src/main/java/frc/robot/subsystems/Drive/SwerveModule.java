@@ -122,7 +122,7 @@ public class SwerveModule {
         turnOut *= -1.0;
         vectorRotations[num] = turnOut;
 
-        SmartDashboard.putNumber("Goal Angle", goalAngle);
+        // SmartDashboard.putNumber("Goal Angle", goalAngle);
     }
 
     /**
