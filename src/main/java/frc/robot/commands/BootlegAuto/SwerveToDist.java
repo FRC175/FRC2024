@@ -2,24 +2,27 @@
 
 // import edu.wpi.first.wpilibj2.command.CommandBase;
 // import frc.robot.subsystems.Drive.Drive;
-// import frc.robot.subsystems.Limelight;
 // import frc.robot.subsystems.Gyro;
 
-
-// public class SwerveToTag extends CommandBase {
+// public class SwerveToDist extends CommandBase {
 //     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 //     private final Drive drive;
-//     private final Limelight limelight;
 //     private final Gyro gyro;
 
+//     private final double speed;
+//     private final double angle;
+//     private final double encoderCounts;
 
 
-//     public SwerveToTag(Drive drive, Gyro gyro, Limelight limelight) {
+//     public SwerveToDist(Drive drive, Gyro gyro, double targetSpeed, double targetAngle, double targetEncoderCounts) {
     
 //         this.drive = drive;
-//         this.limelight = limelight;
 //         this.gyro = gyro;
-//         addRequirements(drive);
+//         this.speed = targetSpeed;
+//         this.angle = targetAngle;
+//         this.encoderCounts = targetEncoderCounts;
+        
+//         addRequirements(drive, gyro);
 //     }
 
 //     @Override
@@ -30,22 +33,17 @@
 
 //     @Override
 //     public void execute() {
-//         double verticalOffset = limelight.getVerticalAngle();
-//     if (verticalOffset > 3 || verticalOffset < 0) {
-//         double joyX = .07 * Math.cos((angle+90)%360);
-//         double joyY = .07 * Math.sin((angle+90)%360);
+//         double joyX = speed * Math.cos((angle+90)%360);
+//         double joyY = speed * Math.sin((angle+90)%360);
 //         drive.lockSwerve(joyX, joyY, 0, gyro.getAngleDegrees());
-//     } else {
-//       cancel();
-//     }
 //     }
 
 //     @Override
 //     public void end(boolean interrupted) {}
 
-//     @Override  
+//     @Override
 //     public boolean isFinished() {
         
-//         return 
-//     }
+//         return drive.getFLPosition() >= encoderCounts;
+//     } 
 // }
