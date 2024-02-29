@@ -28,6 +28,7 @@ import frc.robot.commands.DeployArm;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.pickup;
 import frc.robot.commands.AutoModes.ShootFromFrontSubwoofer;
+import frc.robot.commands.AutoModes.ShootFrontCollectNoteScore;
 import frc.robot.commands.Drive.LockMode;
 import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
@@ -253,7 +254,7 @@ public class RobotContainer {
     autoChooser.setDefaultOption("Nothing", new WaitCommand(0));
     autoChooser.addOption("Drive to Park", new SwerveToDist(drive, 0.3, 45, 2000));
     autoChooser.addOption("Shoot from Subwoofer", new ShootFromFrontSubwoofer(drive, shooter, intake, arm));
-
+    autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new ShootFrontCollectNoteScore(drive, shooter, intake, arm));
     SmartDashboard.putData(autoChooser);
   }
 
