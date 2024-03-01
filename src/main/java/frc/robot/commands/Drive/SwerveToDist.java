@@ -8,32 +8,34 @@ public class SwerveToDist extends CommandBase {
     private final Drive drive;
 
     private final double speed;
-    private final double angle;
-    private final double encoderCounts;
+    private final double targetAngle;
+    private final double headingAngle;
+    private final double targetDistance;
 
 
-    public SwerveToDist(Drive drive, double targetSpeed, double targetAngle, double targetEncoderCounts) {
+    public SwerveToDist(Drive drive, double targetSpeed, double targetAngle, double headingAngle, double targetDistance) {
     
         this.drive = drive;
         this.speed = targetSpeed;
-        this.angle = targetAngle;
-        this.encoderCounts = targetEncoderCounts;
+        this.targetAngle = targetAngle;
+        this.headingAngle = headingAngle;
+        this.targetDistance = targetDistance;
+
         
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
-
+        drive.resetDistance();
     }
 
 
     @Override
     public void execute() {
-        // double joyX = speed * Math.cos((angle+90)%360);
-        // double joyY = speed * Math.sin((angle+90)%360);
-        // drive.lockSwerve(joyX, -joyY, 0, drive.getYaw());
-        drive.lockSwerve(0, -speed, 0, drive.getYaw());
+        double joyX = speed * Math.cos(Math.toRadians((targetAngle+90) % 360));
+        double joyY = -speed * Math.sin(Math.toRadians((targetAngle+90) % 360));
+        drive.lockSwerve(joyX, joyY, headingAngle, drive.getYaw());
     }
 
     @Override
@@ -43,7 +45,6 @@ public class SwerveToDist extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        
-        return drive.getFLPosition() >= encoderCounts;
+        return Math.abs(drive.getDriveDistance()) >= targetDistance;
     } 
 }

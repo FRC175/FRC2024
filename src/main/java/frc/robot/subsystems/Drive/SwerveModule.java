@@ -168,6 +168,10 @@ public class SwerveModule {
         return driveEncoder.getPosition();
     }
 
+    public void resetDriveEncoder() {
+        driveEncoder.setPosition(0);
+    }
+
     public double getDriveDistance() {
         return (getDriveEncoder() / 6.75) * 0.319;
     }

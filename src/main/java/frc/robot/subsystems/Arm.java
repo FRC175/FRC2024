@@ -58,6 +58,14 @@ public class Arm implements Subsystem {
         armSlave.set(demand);
     }
 
+    public void setMasterLoop(double demand) {
+        armMaster.set(-demand);
+    }
+
+    public void setSlaveLoop(double demand) {
+        armSlave.set(demand);
+    }
+
     public double getPosition() {
         return armEncoder.getAbsolutePosition();
         // return -1;

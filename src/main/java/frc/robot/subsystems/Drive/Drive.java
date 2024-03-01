@@ -225,16 +225,28 @@ public final class Drive implements Subsystem {
         return backLeft.getDriveEncoder();
     }
 
+    public double getDriveDistance() {
+        return frontLeft.getDriveDistance();
+    }
+
+    public void resetDriveDistance() {
+        frontLeft.resetDriveEncoder();
+    }
+
     public double getYaw() {
         return ((pigeon.getYaw().getValue() % 360) + 360) % 360;
     }
 
-    public void resetGyro() {
-        pigeon.setYaw(0);
+    public void resetGyro(double val) {
+        pigeon.setYaw(val);
     }
 
     public void postYaw() {
         SmartDashboard.putNumber("Yee-Yaw", getYaw());
+    }
+
+    public void resetDistance() {
+        frontLeft.resetDriveEncoder();
     }
 
     public Translation2d getPose() {

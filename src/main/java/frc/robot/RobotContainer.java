@@ -9,15 +9,18 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.CyclicBarrier;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.simulation.XboxControllerSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -28,8 +31,8 @@ import frc.robot.commands.Climb;
 import frc.robot.commands.DeployArm;
 import frc.robot.commands.SetArmPosition;
 import frc.robot.commands.pickup;
-import frc.robot.commands.AutoModes.ShootFromFrontSubwoofer;
-import frc.robot.commands.AutoModes.ShootFrontCollectNoteScore;
+import frc.robot.commands.AutoModes.DoubleSideShootFromSubwoofer;
+import frc.robot.commands.AutoModes.DoubleNote;
 import frc.robot.commands.Drive.LockMode;
 import frc.robot.commands.Drive.LockSwerve;
 import frc.robot.commands.Drive.Swerve;
@@ -37,6 +40,7 @@ import frc.robot.commands.Drive.SwerveToDist;
 import frc.robot.commands.Shooter.RevShooterThenShoot;
 import frc.robot.subsystems.Drive.Drive;
 import frc.robot.utils.Controller;
+import frc.robot.utils.Utils;
 import frc.robot.subsystems.Intake; 
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Lift;
@@ -107,16 +111,32 @@ public class RobotContainer {
   private void configureDefaultCommands() {
     // Arcade Drive
     drive.setDefaultCommand(new Swerve(driverController, drive));
-    // arm.setDefaultCommand(new RunCommand(() -> {
-    //   double input = 0;
-    //   if (operatorController.getRightY() > 0.05) {
-    //     input = 0.1;
-    //   } else if (operatorController.getRightY() < -0.05) {
-    //     input = -0.1;
-    //   }
-    //   arm.setArmOpenLoop(input);
-    // }, arm));
-    arm.setDefaultCommand(new SetArmPosition(arm, 0.2, 0.2, false));
+    arm.setDefaultCommand(new RunCommand(() -> {
+      double input = 0.05;
+      // if (operatorController.getRightY() > 0.5) {
+      //   arm.setMasterLoop(input);
+      // } else if (operatorController.getRightY() < -0.5) {
+      //   arm.setMasterLoop(-input);
+      // } else {
+      //   arm.setMasterLoop(0);
+      // }
+
+      // if (operatorController.getLeftY() > 0.5) {
+      //   arm.setSlaveLoop(input);
+      // } else if (operatorController.getLeftY() < -0.5) {
+      //   arm.setSlaveLoop(-input);
+      // } else {
+      //   arm.setSlaveLoop(0);
+      // }
+      if (operatorController.getRightY() > 0.5) {
+        arm.setArmOpenLoop(input);
+      } else if (operatorController.getRightY() < -0.5) {
+        arm.setArmOpenLoop(-input);
+      } else {
+        arm.setArmOpenLoop(0);
+      }
+    }, arm));
+    // arm.setDefaultCommand(new SetArmPosition(arm, 0.2, 0.2, false));
     intake.setDefaultCommand(new InstantCommand(() -> {}, intake));
     shooter.setDefaultCommand(new InstantCommand(() -> {}, shooter));
 
@@ -134,7 +154,7 @@ public class RobotContainer {
 
     // Driver Joystick Button 12: Reset Gyro 
     new Trigger(() -> driverController.getB12())
-      .onTrue(new InstantCommand(() -> drive.resetGyro()));
+      .onTrue(new InstantCommand(() -> drive.resetGyro(0)));
 
     new Trigger(() -> driverController.getTrigger())
       .whileTrue(new LockSwerve(driverController, drive))
@@ -146,15 +166,15 @@ public class RobotContainer {
       .onFalse(new Swerve(driverController, drive));
 
     new Trigger(() -> driverController.get4())
-      .whileTrue(new LockSwerve(driverController, drive, 54))
+      .whileTrue(new LockSwerve(driverController, drive, Utils.convToSideAngle(54)))
       .onFalse(new Swerve(driverController, drive));
 
     new Trigger(() -> driverController.get6())
-      .whileTrue(new LockSwerve(driverController, drive, 26.5))
+      .whileTrue(new LockSwerve(driverController, drive, Utils.convToSideAngle(26.5)))
       .onFalse(new Swerve(driverController, drive));
 
     new Trigger(() -> driverController.get3())
-      .whileTrue(new LockSwerve(driverController, drive, 324.69))
+      .whileTrue(new LockSwerve(driverController, drive, Utils.convToSideAngle(324.69)))
       .onFalse(new Swerve(driverController, drive));
 
     // Operator Controller A Button: Reverse Intake 
@@ -191,7 +211,13 @@ public class RobotContainer {
 
     // Operator Controller Left Trigger: Intake 
     new Trigger(() -> operatorController.getLeftTriggerAxis() > 0.2)
-    .onTrue(new pickup(intake))
+    .onTrue(new ParallelCommandGroup(new pickup(intake), new InstantCommand(() -> {
+      if (intake.isNotePresent()) {
+        operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+      } else {
+        operatorController.setRumble(RumbleType.kBothRumble, 0);
+      }
+    })))
     // .onTrue(new RunCommand(() -> {
 
     //   if (intake.isNotePresent()) {
@@ -279,9 +305,10 @@ public class RobotContainer {
 
   private void configureAutoChooser() {
     autoChooser.setDefaultOption("Nothing", new WaitCommand(0));
-    autoChooser.addOption("Drive to Park", new SwerveToDist(drive, 0.3, 45, 2000));
-    autoChooser.addOption("Shoot from Subwoofer", new ShootFromFrontSubwoofer(drive, shooter, intake, arm));
-    autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new ShootFrontCollectNoteScore(drive, shooter, intake, arm));
+    // autoChooser.addOption("Drive to Park", new SwerveToDist(drive, 0.3, 45, 2000));
+    // autoChooser.addOption("Shoot from Subwoofer", new ShootFromFrontSubwoofer(drive, shooter, intake, arm));
+    // autoChooser.addOption("Shoot from Subwoofer, grab note, shoot again", new ShootFrontCollectNoteScore(drive, shooter, intake, arm));
+    autoChooser.addOption("Double Side Shoot and Leave", new DoubleSideShootFromSubwoofer(drive, shooter, intake, arm));
     SmartDashboard.putData(autoChooser);
   }
 
