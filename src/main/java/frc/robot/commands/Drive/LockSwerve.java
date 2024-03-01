@@ -12,11 +12,21 @@ public class LockSwerve extends CommandBase {
     private final Drive drive;
     private final Controller joy;
     private final double travSpeed;
+    private final double lockAngle;
 
     public LockSwerve(Controller joy, Drive drive) {
         this.joy = joy;
         this.drive = drive;
         this.travSpeed = 0.7;
+        this.lockAngle = -1;
+
+        addRequirements(drive);
+    }
+    public LockSwerve(Controller joy, Drive drive, double lockAngle) {
+        this.joy = joy;
+        this.drive = drive;
+        this.travSpeed = 0.7;
+        this.lockAngle = lockAngle;
 
         addRequirements(drive);
     }
@@ -29,11 +39,19 @@ public class LockSwerve extends CommandBase {
 
     @Override
     public void execute() {
-        drive.lockSwerve(
-            Utils.deadband(joy.getLeftX(), 0.05, travSpeed), 
-            Utils.deadband(joy.getLeftY(), 0.05, travSpeed), 
-            (-1*joy.getPOV() + 360) % 360, 
-            drive.getYaw());
+        if (lockAngle == -1) {
+            drive.lockSwerve(
+                Utils.deadband(joy.getLeftX(), 0.05, travSpeed), 
+                Utils.deadband(joy.getLeftY(), 0.05, travSpeed), 
+                (-1*joy.getPOV() + 360) % 360, 
+                drive.getYaw());
+        } else {
+            drive.lockSwerve(
+                Utils.deadband(joy.getLeftX(), 0.05, travSpeed), 
+                Utils.deadband(joy.getLeftY(), 0.05, travSpeed), 
+                lockAngle, 
+                drive.getYaw());
+        }
         // drive.postEncoders();
         // drive.postYaw();
         // SmartDashboard.putBoolean("Trigger", joy.getTrigger());

@@ -29,6 +29,21 @@ public class Controller {
         }
     }
 
+    public boolean get4() {
+        if (isJoystick) return new JoystickButton(joy, 4).getAsBoolean();
+        else return false;
+    }
+
+    public boolean get6() {
+        if (isJoystick) return new JoystickButton(joy, 6).getAsBoolean();
+        else return false;
+    }
+
+    public boolean get3() {
+        if (isJoystick) return new JoystickButton(joy, 3).getAsBoolean();
+        else return false;
+    }
+
     public double getLeftY() {
         if (isJoystick) {
             return joy.getY();

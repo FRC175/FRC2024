@@ -116,7 +116,9 @@ public class RobotContainer {
     //   }
     //   arm.setArmOpenLoop(input);
     // }, arm));
-    // arm.setDefaultCommand(new SetArmPosition(arm, 0.2, 0.4, false));
+    arm.setDefaultCommand(new SetArmPosition(arm, 0.2, 0.2, false));
+    intake.setDefaultCommand(new InstantCommand(() -> {}, intake));
+    shooter.setDefaultCommand(new InstantCommand(() -> {}, shooter));
 
 
   }
@@ -143,10 +145,22 @@ public class RobotContainer {
       .whileTrue(new LockMode(drive))
       .onFalse(new Swerve(driverController, drive));
 
+    new Trigger(() -> driverController.get4())
+      .whileTrue(new LockSwerve(driverController, drive, 54))
+      .onFalse(new Swerve(driverController, drive));
+
+    new Trigger(() -> driverController.get6())
+      .whileTrue(new LockSwerve(driverController, drive, 26.5))
+      .onFalse(new Swerve(driverController, drive));
+
+    new Trigger(() -> driverController.get3())
+      .whileTrue(new LockSwerve(driverController, drive, 324.69))
+      .onFalse(new Swerve(driverController, drive));
+
     // Operator Controller A Button: Reverse Intake 
     new Trigger(() -> operatorController.getAButton())
       .onTrue(new InstantCommand(() -> {
-        intake.setOpenLoop(-0.5);
+        intake.setOpenLoop(-0.25);
         shooter.shooterSetOpenLoop(-0.5, -0.5);
       }, intake))
       .onFalse(new InstantCommand(() -> {
@@ -176,15 +190,18 @@ public class RobotContainer {
     // }, shooter));
 
     // Operator Controller Left Trigger: Intake 
-    new Trigger(() -> operatorController.getLeftTriggerAxis() > 0)
+    new Trigger(() -> operatorController.getLeftTriggerAxis() > 0.2)
     .onTrue(new pickup(intake))
-    .whileTrue(new InstantCommand(() -> {
-      if (intake.isNotePresent()) {
-        operatorController.setRumble(RumbleType.kBothRumble, 1.0);
-      } else {
-        operatorController.setRumble(RumbleType.kBothRumble, 0);
-      }
-    }))
+    // .onTrue(new RunCommand(() -> {
+
+    //   if (intake.isNotePresent()) {
+    //     operatorController.setRumble(RumbleType.kBothRumble, 1.0);
+    //     intake.setOpenLoop(0);
+    //   } else {
+    //     intake.setOpenLoop(0.5);
+    //     operatorController.setRumble(RumbleType.kBothRumble, 0);
+    //   }
+    // }))
     .onFalse(new InstantCommand(() -> {
       intake.setOpenLoop(0);
       operatorController.setRumble(RumbleType.kBothRumble, 0);
@@ -197,19 +214,19 @@ public class RobotContainer {
     // selma stinks; rym too
     // Operator Controller Right Trigger: Shoot into Speaker 
     new Trigger(() -> operatorController.getRightTriggerAxis() > 0.5) 
-    // .onTrue(new RevShooterThenShoot(shooter, intake))
-    // .onFalse(new InstantCommand(() -> {
-    //   intake.setOpenLoop(0);
-    //   shooter.shooterSetOpenLoop(0, 0);
-    // }, shooter, intake));
-    .onTrue(new InstantCommand(() -> {
-      intake.setOpenLoop(0.25);
-      shooter.shooterSetOpenLoop(0.25, 0.25);
-    }, intake, shooter))
+    .onTrue(new RevShooterThenShoot(shooter, intake))
     .onFalse(new InstantCommand(() -> {
-      intake.setOpenLoop(0.0);
+      intake.setOpenLoop(0);
       shooter.shooterSetOpenLoop(0, 0);
-    }, intake, shooter));
+    }, shooter, intake));
+    // .onTrue(new InstantCommand(() -> {
+    //   intake.setOpenLoop(0.25);
+    //   shooter.shooterSetOpenLoop(0.25, 0.25);
+    // }, intake, shooter))
+    // .onFalse(new InstantCommand(() -> {
+    //   intake.setOpenLoop(0.0);
+    //   shooter.shooterSetOpenLoop(0, 0);
+    // }, intake, shooter));
 
     // // Operator Controller X Button: Climb 
     // new Trigger(() -> operatorController.getXButton())
@@ -255,6 +272,9 @@ public class RobotContainer {
     new Trigger(() -> operatorController.getPOV() == 270)
       // .onTrue(new SetArmPosition(arm, 0.2, false, ArmConstants.REST));
       .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmConstants.REST);}));
+
+    new Trigger(() -> operatorController.getYButton())
+      .onTrue(new InstantCommand(() -> {arm.setArmGoalPosition(ArmConstants.PODIUM);}));
   }
 
   private void configureAutoChooser() {

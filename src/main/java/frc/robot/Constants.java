@@ -73,10 +73,11 @@ public final class Constants {
     public static final class ArmConstants {
         public static final int ARM_RIGHT = 10; 
         public static final int ARM_LEFT = 11; 
-        public static final double REST = 0.83;
-        public static final double AMP = 0.66;
-        public static final double SPEAKER = 0.85;
-        public static final double INTAKE = 0.900;
+        public static final double REST = 0.850;
+        public static final double AMP = 0.630;
+        public static final double SPEAKER = 0.870;
+        public static final double INTAKE = 0.8975;
+        public static final double PODIUM = 0.795;
     }
 
     public static final class LEDConstants {

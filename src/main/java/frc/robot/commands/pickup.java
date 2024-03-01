@@ -7,12 +7,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class pickup extends CommandBase {
     
     private final Intake intake; 
+    private boolean initial;
    
     
 
     public pickup(Intake intake) {
         
         this.intake = intake;
+        initial = true;
        
   
         addRequirements(intake);
@@ -25,17 +27,20 @@ public class pickup extends CommandBase {
 
   @Override
   public void execute() {
-    intake.setOpenLoop(0.5);
+    if (initial) intake.setOpenLoop(0.5);
+    if (initial) if (intake.isNotePresent()) initial = false;
+    if (!initial) intake.setOpenLoop(-0.15);
   }
   
   @Override
   public void end(boolean interrupted) {
     intake.setOpenLoop(0);
+    initial = true;
   }
 
   @Override
   public boolean isFinished() {
-    return intake.isNotePresent();
+    return !initial && !intake.isNotePresent();
   }
 }
 

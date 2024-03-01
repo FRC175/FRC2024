@@ -33,6 +33,7 @@ public class Intake implements Subsystem {
 
     @Override
     public void periodic() {
+        // System.out.println(isNotePresent());
         SmartDashboard.putBoolean("Pickup Sensor", isNotePresent());
     }
 

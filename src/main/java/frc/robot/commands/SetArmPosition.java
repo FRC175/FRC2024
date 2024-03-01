@@ -60,11 +60,13 @@ public class SetArmPosition extends CommandBase {
                 else hasHit = true;
             } else {
                 if (arm.getPosition() - armGoalPosition > DEADBAND) {
-                    arm.setArmOpenLoop(-0.1);
-                } else if (Math.abs(arm.getPosition() - armGoalPosition) > 0.01) {
-                    hasHit = false;
+                    arm.setArmOpenLoop(-0.05);
                 } else {
                     arm.setArmOpenLoop(0);
+                }
+
+                if (Math.abs(arm.getPosition() - armGoalPosition) > DEADBAND * 10) {
+                    hasHit = false;
                 }
             }
         }
